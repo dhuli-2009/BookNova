@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #1565C0;
+}
+
+.splash-screen {
+    width: 100%;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    background-color: #1565C0;
+    color: white;
+
+    text-align: center;
+}
+
+/* Book Logo */
+
+.book-logo {
+    width: 100px;
+    height: 75px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    margin-bottom: 25px;
+}
+
+.book {
+    width: 42px;
+    height: 65px;
+
+    background: white;
+    border-radius: 5px 2px 2px 5px;
+
+    position: relative;
+}
+
+.left-page {
+    transform: skewY(8deg);
+    margin-right: 2px;
+}
+
+.right-page {
+    transform: skewY(-8deg);
+    margin-left: 2px;
+}
+
+/* BookNova */
+
+h1 {
+    font-size: 42px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Subtitle */
+
+.subtitle {
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+
+/* Tagline */
+
+.tagline {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* Loading Bar */
+
+.loading-container {
+    width: 80px;
+    height: 5px;
+
+    background-color: rgba(255, 255, 255, 0.35);
+
+    border-radius: 10px;
+
+    margin-top: 110px;
+    overflow: hidden;
+}
+
+.loading-bar {
+    width: 100%;
+    height: 100%;
+
+    background-color: white;
+
+    border-radius: 10px;
+
+    animation: loading 2.5s linear infinite;
+}
+
+@keyframes loading {
+
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+
+}
