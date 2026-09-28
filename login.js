@@ -1,5 +1,6 @@
 function togglePassword() {
-    let password = document.getElementById("password");
+
+    const password = document.getElementById("password");
 
     if (password.type === "password") {
         password.type = "text";
@@ -8,20 +9,27 @@ function togglePassword() {
     }
 }
 
+
 function login() {
 
-    let email = document.getElementById("email").value.trim();
-    let password = document.getElementById("password").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+
+    const message = document.getElementById("message");
+
 
     if (email !== "" && password !== "") {
 
-        // Open friend's next page
-        window.location.href = "dashboard.html";
+        message.style.color = "green";
+
+        message.innerHTML = "Login successful!";
 
     } else {
 
-        document.getElementById("message").style.color = "red";
-        document.getElementById("message").innerHTML =
+        message.style.color = "red";
+
+        message.innerHTML =
             "Please enter email and password.";
     }
 }
+
