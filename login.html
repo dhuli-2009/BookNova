@@ -211,8 +211,8 @@
             OR
         </div>
 
-        <button class="google-btn">
-            🔵 Continue with Google
+        <button class="google-btn" onclick="googleLogin()">
+                 🔵 Continue with Google
         </button>
 
         <div class="register">
@@ -268,8 +268,70 @@
                     "Please enter email and password.";
             }
         }
+</script>
+       
+<script type="module">
+  import { initializeApp } from
+    "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 
-    </script>
+  import {
+    getAuth,
+    GoogleAuthProvider,
+    signInWithPopup
+  } from
+    "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+
+  // Your BookNova Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyB9Fxj1dX1pHNRQbYNI6fIm4aTOC2Qe6hA",
+    authDomain: "booknova-b49ae.firebaseapp.com",
+    projectId: "booknova-b49ae",
+    storageBucket: "booknova-b49ae.firebasestorage.app",
+    messagingSenderId: "990019812270",
+    appId: "1:990019812270:web:2fab81904454314b63e63f",
+    measurementId: "G-QQ3DXZRDD5"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // Real Google Sign-In
+  window.googleLogin = async function () {
+    const message = document.getElementById("message");
+
+    message.style.color = "#4f46e5";
+    message.textContent = "Connecting to Google...";
+
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      sessionStorage.setItem("booknovaUser", JSON.stringify({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL
+      }));
+
+      window.location.href = "./home.html";
+
+    } catch (error) {
+      console.error("Google login error:", error);
+
+      message.style.color = "red";
+
+      if (error.code === "auth/popup-closed-by-user") {
+        message.textContent = "Google sign-in was cancelled.";
+      } else if (error.code === "auth/unauthorized-domain") {
+        message.textContent =
+          "This domain is not authorized in Firebase.";
+      } else {
+        message.textContent =
+          "Google login failed: " + error.code;
+      }
+    }
+  };
+</script>
 
 </body>
 </html>

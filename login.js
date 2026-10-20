@@ -33,3 +33,11 @@ function login() {
     }
 }
 
+function googleLogin() {
+    document.getElementById("message").style.color = "green";
+    document.getElementById("message").innerHTML =
+        "Google Login Successful";
+
+    window.location.href = "home.html";
+}
+
