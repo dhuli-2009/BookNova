@@ -1,0 +1,22 @@
+{
+  "name": "booknova",
+  "version": "1.0.0",
+  "description": "Smart Library Management System",
+  "main": "home.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dhuli-2009/BookNova.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/dhuli-2009/BookNova/issues"
+  },
+  "homepage": "https://github.com/dhuli-2009/BookNova#readme"
+}
