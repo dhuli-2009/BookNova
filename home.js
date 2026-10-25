@@ -1,4 +1,3 @@
-
 const searchInput = document.getElementById("searchInput");
 const bookGrid = document.getElementById("bookGrid");
 const emptyMessage = document.getElementById("emptyMessage");
@@ -8,7 +7,15 @@ const toast = document.getElementById("toast");
 let toastTimer;
 let selectedCategory = "All Books";
 
+// PDF.js setup
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+}
+
 function showToast(message) {
+  if (!toast) return;
+
   toast.textContent = message;
   toast.style.display = "block";
 
@@ -78,6 +85,62 @@ const books = [
   }
 ];
 
+// Create a path to a PDF in the books folder
+function getPdfPath(fileName) {
+  return "books/" + encodeURIComponent(fileName)
+    .replace(/%2F/g, "/");
+}
+
+// Render the first page of a PDF inside its book cover
+async function loadPdfCover(canvas, book, fallback) {
+  if (!window.pdfjsLib) {
+    fallback.style.display = "flex";
+    return;
+  }
+
+  try {
+    const pdfPath = getPdfPath(book.file);
+    const pdf = await pdfjsLib.getDocument(pdfPath).promise;
+    const page = await pdf.getPage(1);
+
+    const coverWidth = 240;
+    const coverHeight = 180;
+    const originalViewport = page.getViewport({ scale: 1 });
+
+    const scale = Math.min(
+      coverWidth / originalViewport.width,
+      coverHeight / originalViewport.height
+    );
+
+    const viewport = page.getViewport({ scale });
+
+    const outputScale = window.devicePixelRatio || 1;
+
+    canvas.width = Math.floor(viewport.width * outputScale);
+    canvas.height = Math.floor(viewport.height * outputScale);
+
+    canvas.style.width = `${viewport.width}px`;
+    canvas.style.height = `${viewport.height}px`;
+    canvas.style.display = "block";
+
+    const context = canvas.getContext("2d");
+
+    await page.render({
+      canvasContext: context,
+      viewport: viewport,
+      transform: outputScale !== 1
+        ? [outputScale, 0, 0, outputScale, 0, 0]
+        : null
+    }).promise;
+
+    fallback.style.display = "none";
+  } catch (error) {
+    console.error("Could not load PDF cover:", book.title, error);
+    canvas.style.display = "none";
+    fallback.style.display = "flex";
+  }
+}
+
 // Load Google account details
 try {
   const user = JSON.parse(
@@ -86,19 +149,22 @@ try {
 
   if (user) {
     const name = user.name || user.email || "Reader";
-
-    document.getElementById("userName").textContent =
-      name.split(" ")[0];
-
+    const userName = document.getElementById("userName");
     const avatar = document.getElementById("avatar");
 
-    if (user.photo) {
-      const img = document.createElement("img");
-      img.src = user.photo;
-      img.alt = "Profile photo";
-      avatar.replaceChildren(img);
-    } else {
-      avatar.textContent = name.charAt(0).toUpperCase();
+    if (userName) {
+      userName.textContent = name.split(" ")[0];
+    }
+
+    if (avatar) {
+      if (user.photo) {
+        const img = document.createElement("img");
+        img.src = user.photo;
+        img.alt = "Profile photo";
+        avatar.replaceChildren(img);
+      } else {
+        avatar.textContent = name.charAt(0).toUpperCase();
+      }
     }
   }
 } catch (error) {
@@ -170,19 +236,43 @@ function renderBooks() {
     const card = document.createElement("article");
     card.className = "book-card";
 
+    // Book cover container
     const cover = document.createElement("div");
 
+    cover.className = "pdf-cover";
     cover.style.cssText = `
       width: 100%;
-      height: 180px;
+      height: 190px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 5px;
+    `;
+
+    // Canvas displays the actual first page of the PDF
+    const canvas = document.createElement("canvas");
+    canvas.style.cssText = `
+      display: none;
+      max-width: 100%;
+      max-height: 180px;
+      object-fit: contain;
+    `;
+
+    // Fallback shown if the PDF cover cannot be loaded
+    const fallback = document.createElement("div");
+    fallback.style.cssText = `
+      width: 100%;
+      height: 100%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-direction: column;
       gap: 10px;
-      background: #f1f5f9;
-      border-radius: 10px;
-      font-size: 48px;
+      font-size: 42px;
     `;
 
     const icon = document.createElement("span");
@@ -190,7 +280,6 @@ function renderBooks() {
 
     const categoryLabel = document.createElement("span");
     categoryLabel.textContent = book.category;
-
     categoryLabel.style.cssText = `
       font-size: 12px;
       color: #1565c0;
@@ -199,7 +288,11 @@ function renderBooks() {
       padding: 0 8px;
     `;
 
-    cover.append(icon, categoryLabel);
+    fallback.append(icon, categoryLabel);
+    cover.append(canvas, fallback);
+
+    // Load the PDF cover without blocking the other book cards
+    loadPdfCover(canvas, book, fallback);
 
     const title = document.createElement("h3");
     title.textContent = book.title;
@@ -226,9 +319,7 @@ function renderBooks() {
     openButton.type = "button";
 
     openButton.addEventListener("click", () => {
-      const pdfPath = "books/" + encodeURIComponent(book.file)
-        .replace(/%2F/g, "/");
-
+      const pdfPath = getPdfPath(book.file);
       window.open(pdfPath, "_blank", "noopener");
     });
 
