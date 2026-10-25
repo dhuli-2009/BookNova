@@ -17,6 +17,7 @@
       <p>Smart Library Management System</p>
     </div>
   </div>
+
   <div class="user-area">
     <button class="notification" id="notificationBtn" aria-label="Notifications">♧</button>
     <div class="avatar" id="avatar">U</div>
@@ -32,8 +33,12 @@
 
   <label class="search-box">
     <span>🔍</span>
-    <input type="search" id="searchInput"
-      placeholder="Search books, authors..." aria-label="Search books">
+    <input
+      type="search"
+      id="searchInput"
+      placeholder="Search books, authors..."
+      aria-label="Search books"
+    >
   </label>
 
   <section class="stats">
@@ -66,14 +71,17 @@
         <span class="shortcut-icon">📖</span>
         <strong>All Books</strong>
       </button>
+
       <button class="shortcut" data-action="categories">
         <span class="shortcut-icon">▦</span>
         <strong>Categories</strong>
       </button>
+
       <button class="shortcut" data-action="library">
         <span class="shortcut-icon">📚</span>
         <strong>My Library</strong>
       </button>
+
       <button class="shortcut" data-action="reserve">
         <span class="shortcut-icon">▣</span>
         <strong>Reserve</strong>
@@ -87,151 +95,38 @@
       <button class="view-all" id="viewAllBtn">View All →</button>
     </div>
 
-    <div class="book-grid" id="bookGrid">
+    <!-- Book categories will appear here -->
+    <div
+      id="categoryFilters"
+      style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"
+    ></div>
 
-      <article class="book-card" data-search="python crash course python eric matthes">
-  <img src="https://covers.openlibrary.org/b/isbn/9781593279288-L.jpg"
-       alt="Python Crash Course"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Python Crash Course</h3>
-  <p class="author">by Eric Matthes</p>
-  <p class="rating">★★★★★ <span>4.8</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Python Crash Course">Reserve</button>
-  </div>
-</article>
+    <!-- The 8 PDF books will appear here automatically -->
+    <div class="book-grid" id="bookGrid"></div>
 
-<article class="book-card" data-search="html css design web jon duckett">
-  <img src="https://covers.openlibrary.org/b/isbn/9781118008188-L.jpg"
-       alt="HTML and CSS"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>HTML and CSS</h3>
-  <p class="author">by Jon Duckett</p>
-  <p class="rating">★★★★★ <span>4.7</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="HTML and CSS">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="eloquent javascript programming marijn haverbeke">
-  <img src="https://covers.openlibrary.org/b/isbn/9781593279509-L.jpg"
-       alt="Eloquent JavaScript"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Eloquent JavaScript</h3>
-  <p class="author">by Marijn Haverbeke</p>
-  <p class="rating">★★★★★ <span>4.8</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Eloquent JavaScript">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="c programming language dennis ritchie">
-  <img src="https://covers.openlibrary.org/b/isbn/9780131103627-L.jpg"
-       alt="The C Programming Language"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>The C Programming Language</h3>
-  <p class="author">by Brian W. Kernighan</p>
-  <p class="rating">★★★★★ <span>4.7</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="The C Programming Language">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="head first java programming kathy sierra">
-  <img src="https://covers.openlibrary.org/b/isbn/9781491910771-L.jpg"
-       alt="Head First Java"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Head First Java</h3>
-  <p class="author">by Kathy Sierra</p>
-  <p class="rating">★★★★★ <span>4.6</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Head First Java">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="artificial intelligence ai russell norvig">
-  <img src="https://covers.openlibrary.org/b/isbn/9780134610993-L.jpg"
-       alt="Artificial Intelligence"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Artificial Intelligence</h3>
-  <p class="author">by Stuart Russell</p>
-  <p class="rating">★★★★★ <span>4.8</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Artificial Intelligence">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="database system concepts database silberschatz">
-  <img src="https://covers.openlibrary.org/b/isbn/9780078022159-L.jpg"
-       alt="Database System Concepts"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Database System Concepts</h3>
-  <p class="author">by Abraham Silberschatz</p>
-  <p class="rating">★★★★★ <span>4.7</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Database System Concepts">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="introduction algorithms data structures cormen">
-  <img src="https://covers.openlibrary.org/b/isbn/9780262046305-L.jpg"
-       alt="Introduction to Algorithms"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Introduction to Algorithms</h3>
-  <p class="author">by Thomas H. Cormen</p>
-  <p class="rating">★★★★★ <span>4.8</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Introduction to Algorithms">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="atomic habits self improvement james clear">
-  <img src="https://covers.openlibrary.org/b/isbn/9780735211292-L.jpg"
-       alt="Atomic Habits"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Atomic Habits</h3>
-  <p class="author">by James Clear</p>
-  <p class="rating">★★★★★ <span>4.9</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Atomic Habits">Reserve</button>
-  </div>
-</article>
-
-<article class="book-card" data-search="dont make me think web design usability steve krug">
-  <img src="https://covers.openlibrary.org/b/isbn/9780321965516-L.jpg"
-       alt="Don't Make Me Think"
-       style="width:100%;height:180px;object-fit:contain;background:#f1f5f9;border-radius:10px;">
-  <h3>Don't Make Me Think</h3>
-  <p class="author">by Steve Krug</p>
-  <p class="rating">★★★★★ <span>4.6</span></p>
-  <div class="book-bottom">
-    <span class="available">● Available</span>
-    <button class="reserve-btn" data-book="Don't Make Me Think">Reserve</button>
-  </div>
-</article>
-
-      <p class="empty-message" id="emptyMessage" hidden>
-        No books found. Try another search.
-      </p>
-
-    </div>
+    <p class="empty-message" id="emptyMessage" hidden>
+      No books found. Try another search.
+    </p>
   </section>
+
 </main>
 
 <nav class="bottom-nav">
-  <button class="nav-item active" data-page="home"><span>⌂</span>Home</button>
-  <button class="nav-item" data-page="search"><span>⌕</span>Search</button>
-  <button class="nav-item" data-page="library"><span>📖</span>My Library</button>
-  <button class="nav-item" data-page="profile"><span>♙</span>Profile</button>
+  <button class="nav-item active" data-page="home">
+    <span>⌂</span>Home
+  </button>
+
+  <button class="nav-item" data-page="search">
+    <span>⌕</span>Search
+  </button>
+
+  <button class="nav-item" data-page="library">
+    <span>📖</span>My Library
+  </button>
+
+  <button class="nav-item" data-page="profile">
+    <span>♙</span>Profile
+  </button>
 </nav>
 
 <div class="toast" id="toast" role="status"></div>
