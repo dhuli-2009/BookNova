@@ -172,6 +172,70 @@ function renderBooks() {
 
     const cover = document.createElement("div");
 
+cover.className = "pdf-cover";
+cover.style.cssText = `
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #f1f5f9;
+  border-radius: 10px;
+`;
+
+const canvas = document.createElement("canvas");
+
+canvas.style.cssText = `
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+`;
+
+cover.appendChild(canvas);
+
+// PDFના પહેલા પેજને કવર તરીકે બતાવો
+const pdfPath = "books/" + encodeURIComponent(book.file);
+
+if (window.pdfjsLib) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  pdfjsLib.getDocument(pdfPath).promise
+    .then(pdf => pdf.getPage(1))
+    .then(page => {
+      const originalViewport = page.getViewport({ scale: 1 });
+
+      const scale = Math.min(
+        220 / originalViewport.width,
+        180 / originalViewport.height
+      );
+
+      const viewport = page.getViewport({ scale });
+
+      const context = canvas.getContext("2d");
+
+      canvas.width = Math.round(viewport.width);
+      canvas.height = Math.round(viewport.height);
+
+      return page.render({
+        canvasContext: context,
+        viewport: viewport
+      }).promise;
+    })
+    .catch(error => {
+      console.error("Could not load PDF cover:", book.title, error);
+      cover.textContent = "PDF cover unavailable";
+      cover.style.fontSize = "12px";
+      cover.style.color = "#64748b";
+    });
+} else {
+  cover.textContent = "PDF.js not loaded";
+  cover.style.fontSize = "12px";
+}
+
     cover.style.cssText = `
       width: 100%;
       height: 180px;
