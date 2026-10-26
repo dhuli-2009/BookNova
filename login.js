@@ -16,6 +16,8 @@ function login() {
     const password = document.getElementById("password").value.trim();
 
     const message = document.getElementById("message");
+    const name = email.split("@")[0];
+    sessionStorage.setItem("readerName", name);
 
 
     if (email !== "" && password !== "") {
