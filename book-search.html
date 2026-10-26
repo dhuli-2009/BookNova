@@ -1,0 +1,45 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNova - Book Search</title>
+    <link rel="stylesheet" href="book-search.css">
+</head>
+<body>
+
+<header class="topbar">
+    <div class="brand">
+        <span class="logo">📘</span>
+        <div>
+            <h1>BookNova</h1>
+            <p>Smart Library Management System</p>
+        </div>
+    </div>
+</header>
+
+<main class="container">
+    <h2>Search Books 📚</h2>
+    <p>Discover and read your favourite books.</p>
+
+    <input
+        type="search"
+        id="searchInput"
+        placeholder="Search by book name, author or category..."
+    >
+
+    <div id="bookGrid" class="book-grid"></div>
+    <p id="noBooks" hidden>No books found. Try another search.</p>
+</main>
+
+<nav class="bottom-nav">
+    <a href="home.html">⌂ Home</a>
+    <a href="book-search.js" class="active">⌕ Search</a>
+    <a href="my-library.php">📖 My Library</a>
+    <a href="profile.html">♙ Profile</a>
+</nav>
+
+<script src="book-search.js"></script>
+</body>
+</html>
