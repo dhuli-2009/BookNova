@@ -8,6 +8,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="home.js" defer></script>
 </head>
+<script>
+const readerName = sessionStorage.getItem("readerName") || "Reader";
+
+document.getElementById("readerGreeting").textContent =
+    "Hello, " + readerName + "! 👋";
+</script>
 <body>
 
 <header class="topbar">
@@ -28,7 +34,7 @@
 <main class="container">
 
   <section class="welcome">
-    <h2>Hello, <span id="userName">Reader</span> 👋</h2>
+    <h2 id="readerGreeting">Hello, Reader! 👋</h2>
     <p>Discover your next favourite book today!</p>
   </section>
 
