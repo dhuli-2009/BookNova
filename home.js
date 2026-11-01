@@ -141,35 +141,49 @@ async function loadPdfCover(canvas, book, fallback) {
   }
 }
 
-// Load Google account details
+
+ // Load the logged-in user's details
 try {
-  const user = JSON.parse(
+  const googleUser = JSON.parse(
     sessionStorage.getItem("booknovaUser") || "null"
   );
 
-  if (user) {
-    const name = user.name || user.email || "Reader";
-    const userName = document.getElementById("userName");
-    const avatar = document.getElementById("avatar");
+  const emailLoginName = sessionStorage.getItem("readerName");
 
-    if (userName) {
-      userName.textContent = name.split(" ")[0];
-    }
+  const name =
+    (googleUser && (googleUser.name || googleUser.email)) ||
+    emailLoginName ||
+    "Reader";
 
-    if (avatar) {
-      if (user.photo) {
-        const img = document.createElement("img");
-        img.src = user.photo;
-        img.alt = "Profile photo";
-        avatar.replaceChildren(img);
-      } else {
-        avatar.textContent = name.charAt(0).toUpperCase();
-      }
+  const firstName = name.trim().split(/\s+/)[0] || "Reader";
+
+  const userName = document.getElementById("userName");
+  const avatar = document.getElementById("avatar");
+
+  if (userName) {
+    userName.textContent = firstName;
+  }
+
+  if (avatar) {
+    if (googleUser && googleUser.photo) {
+      const img = document.createElement("img");
+      img.src = googleUser.photo;
+      img.alt = "Profile photo";
+      avatar.replaceChildren(img);
+    } else {
+      avatar.textContent = firstName.charAt(0).toUpperCase();
     }
   }
 } catch (error) {
   console.error("Could not load user details:", error);
+
+  const userName = document.getElementById("userName");
+  const avatar = document.getElementById("avatar");
+
+  if (userName) userName.textContent = "Reader";
+  if (avatar) avatar.textContent = "R";
 }
+
 
 // Create category buttons
 const categories = [
