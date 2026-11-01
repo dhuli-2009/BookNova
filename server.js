@@ -2,6 +2,7 @@ const fs=require("fs");
 const path=require("path");
 const express = require("express");
 const mysql = require("mysql2");
+const bcrypt=requirde("bcrypt");
 const cors = require("cors");
 require("dotenv").config();
 
@@ -41,7 +42,49 @@ app.get("/api/books", (req, res) => {
         res.json(results);
     });
 });
+app.post("/api/register", async (req, res) => {
+    const { name, email, mobile, password } = req.body;
 
+    if (!name || !email || !mobile || !password) {
+        return res.status(400).json({
+            message: "All fields are required"
+        });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const sql = `INSERT INTO users
+        (full_name, email, password_hash, phone, role, created_at)
+        VALUES (?, ?, ?, ?, 'user', NOW())`;
+
+        db.query(
+            sql,
+            [name, email, hashedPassword, mobile],
+            (err, result) => {
+                if (err) {
+                    if (err.code === "ER_DUP_ENTRY") {
+                        return res.status(409).json({
+                            message: "Email already registered"
+                        });
+                    }
+
+                    return res.status(500).json({
+                        message: "Registration failed"
+                    });
+                }
+
+                res.status(201).json({
+                    message: "Registration successful"
+                });
+            }
+        );
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error"
+        });
+    }
+});
 const PORT = process.env.PORT||3000;
 
 app.listen(PORT, () => {
