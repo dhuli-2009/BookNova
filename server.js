@@ -39,7 +39,7 @@ app.get("/api/books", (req, res) => {
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT||3000;
 
 app.listen(PORT, () => {
     console.log(`BookNova server running on http://localhost:${PORT}`);
