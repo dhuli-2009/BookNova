@@ -1,3 +1,5 @@
+const fs=require("fs");
+const path=require("path");
 const express = require("express");
 const mysql = require("mysql2");
 const cors = require("cors");
@@ -19,8 +21,9 @@ const db = mysql.createConnection({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     ssl: {
-        rejectUnauthorized: true
-    }
+    ca: fs.readFileSync("/etc/secrets/ca.pem"),
+    rejectUnauthorized: true
+}
 });
 db.connect((err) => {
     if (err) {
