@@ -87,6 +87,54 @@ app.post("/api/register", async (req, res) => {
 });
 const PORT = process.env.PORT||3000;
 
+app.post("/api/login", async(req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "Email and password are required"
+        });
+    }
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+
+    db.query(sql, async (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                message: "Login failed"
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            });
+        }
+
+        const user = results[0];
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+
+        if (!isMatch) {
+            return res.status(401).json({
+                message: "Invalid email or password"
+            });
+        }
+
+        res.json({
+            message: "Login successful",
+            user: {
+                user_id: user.user_id,
+                full_name: user.full_name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    });
+});
+
+
+
+
 app.listen(PORT, () => {
     console.log(`BookNova server running on http://localhost:${PORT}`);
 });
