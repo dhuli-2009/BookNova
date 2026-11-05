@@ -5,15 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BookNova - Home</title>
   <link rel="stylesheet" href="home.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="home.js" defer></script>
 </head>
-<script>
-const readerName = sessionStorage.getItem("readerName") || "Reader";
-
-document.getElementById("readerGreeting").textContent =
-    "Hello, " + readerName + "! 👋";
-</script>
 <body>
 
 <header class="topbar">
@@ -27,14 +20,14 @@ document.getElementById("readerGreeting").textContent =
 
   <div class="user-area">
     <button class="notification" id="notificationBtn" aria-label="Notifications">♧</button>
-    <div class="avatar" id="avatar">U</div>
+    <button class="avatar" id="avatar" aria-label="Profile">U</button>
   </div>
 </header>
 
 <main class="container">
 
   <section class="welcome">
-    <h2 id="readerGreeting">Hello, Reader! 👋</h2>
+    <h2>Hello, <span id="userName">Reader</span> 👋</h2>
     <p>Discover your next favourite book today!</p>
   </section>
 
@@ -49,11 +42,12 @@ document.getElementById("readerGreeting").textContent =
   </label>
 
   <section class="stats">
+
     <div class="stat-card issued">
       <div>
         <p>Currently Issued</p>
-        <h3>3</h3>
-        <button class="text-btn" id="issuedBtn">View All →</button>
+        <h3 id="issuedCount">3</h3>
+        <button class="text-btn" id="issuedBtn" type="button">View All →</button>
       </div>
       <span class="stat-icon">📚</span>
     </div>
@@ -61,82 +55,103 @@ document.getElementById("readerGreeting").textContent =
     <div class="stat-card due">
       <div>
         <p>Due Today</p>
-        <h3>1</h3>
-        <button class="text-btn" id="dueBtn">View →</button>
+        <h3 id="dueCount">1</h3>
+        <button class="text-btn" id="dueBtn" type="button">View →</button>
       </div>
       <span class="stat-icon">📅</span>
     </div>
+
   </section>
 
   <section class="section">
+
     <div class="section-heading">
       <h2>Explore Library</h2>
     </div>
 
     <div class="shortcuts">
-      <button class="shortcut" data-action="books">
+
+      <button class="shortcut" data-action="books" type="button">
         <span class="shortcut-icon">📖</span>
         <strong>All Books</strong>
       </button>
 
-      <button class="shortcut" data-action="categories">
+      <button class="shortcut" data-action="categories" type="button">
         <span class="shortcut-icon">▦</span>
         <strong>Categories</strong>
       </button>
 
-      <button class="shortcut" data-action="library">
+      <button class="shortcut" data-action="library" type="button">
         <span class="shortcut-icon">📚</span>
         <strong>My Library</strong>
       </button>
 
-      <button class="shortcut" data-action="reserve">
+      <button class="shortcut" data-action="reserve" type="button">
         <span class="shortcut-icon">▣</span>
         <strong>Reserve</strong>
       </button>
+
     </div>
   </section>
 
-  <section class="section">
+  <!-- BOOKS SECTION -->
+
+  <section class="section" id="booksSection">
+
     <div class="section-heading">
-      <h2>Recommended For You</h2>
-      <button class="view-all" id="viewAllBtn">View All →</button>
+
+      <div>
+        <h2 id="booksHeading">Recommended For You</h2>
+        <p class="section-subtitle" id="bookCountLabel">
+          Browse books by category
+        </p>
+      </div>
+
+      <button class="view-all" id="viewAllBtn" type="button">
+        View All →
+      </button>
+
     </div>
 
-    <!-- Book categories will appear here -->
-    <div
-      id="categoryFilters"
-      style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:20px;"
-    ></div>
+    <div id="categoryFilters" class="category-filters"></div>
 
-    <!-- The 8 PDF books will appear here automatically -->
     <div class="book-grid" id="bookGrid"></div>
 
     <p class="empty-message" id="emptyMessage" hidden>
       No books found. Try another search.
     </p>
+
   </section>
 
 </main>
 
+<!-- BOTTOM NAVIGATION -->
+
 <nav class="bottom-nav">
-  <button class="nav-item active" data-page="home">
-    <span>⌂</span>Home
+
+  <button class="nav-item active" data-page="home" type="button">
+    <span>⌂</span>
+    Home
   </button>
 
-  <button class="nav-item" data-page="search">
-    <span>⌕</span>Search
+  <button class="nav-item" data-page="search" type="button">
+    <span>⌕</span>
+    Search
   </button>
 
-  <button class="nav-item" data-page="library">
-    <span>📖</span>My Library
+  <button class="nav-item" data-page="library" type="button">
+    <span>📖</span>
+    My Library
   </button>
 
-  <button class="nav-item" data-page="profile">
-    <span>♙</span>Profile
+  <button class="nav-item" data-page="profile" type="button">
+    <span>♙</span>
+    Profile
   </button>
+
 </nav>
 
-<div class="toast" id="toast" role="status"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 </body>
 </html>

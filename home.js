@@ -1,438 +1,833 @@
-const searchInput = document.getElementById("searchInput");
-const bookGrid = document.getElementById("bookGrid");
-const emptyMessage = document.getElementById("emptyMessage");
-const categoryFilters = document.getElementById("categoryFilters");
-const toast = document.getElementById("toast");
+// ========================================
+// BOOKNOVA - HOME DASHBOARD
+// ========================================
 
-let toastTimer;
+const $ = id => document.getElementById(id);
+
+const searchInput = $("searchInput");
+const bookGrid = $("bookGrid");
+const categoryFilters = $("categoryFilters");
+const emptyMessage = $("emptyMessage");
+const toast = $("toast");
+const pdfUpload = $("pdfUpload");
+
+const CATS = {
+  "Food & Drinks": "🍹",
+  "Psychology": "🧠",
+  "Love Story": "❤️",
+  "Horror": "👻",
+  "Birds & Nature": "🐦"
+};
+
+const categories = [
+  "All Books",
+  ...Object.keys(CATS)
+];
+
 let selectedCategory = "All Books";
+let mode = "all";
+let uploadedBooks = [];
+let favorites = [];
+let toastTimer;
 
-// PDF.js setup
-if (window.pdfjsLib) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-}
+// ========================================
+// TOAST MESSAGE
+// ========================================
 
 function showToast(message) {
-  if (!toast) return;
-
   toast.textContent = message;
   toast.style.display = "block";
 
   clearTimeout(toastTimer);
+
   toastTimer = setTimeout(() => {
     toast.style.display = "none";
   }, 2600);
 }
 
-// Your 8 PDF books
-const books = [
-  {
-    title: "Cognitive Psychology",
-    author: "College of the Canyons",
-    category: "Psychology",
-    file: "Cognitive-Psychology-College-of-the-Canyons.pdf",
-    icon: "🧠"
-  },
-  {
-    title: "Creative Vegetarian Cooking",
-    author: "Radha Soami Satsang Beas",
-    category: "Cooking",
-    file: "Creative-Vegetarian-Cooking-Radha-Soami-Satsang-Beas.pdf",
-    icon: "🥗"
-  },
-  {
-    title: "Dracula",
-    author: "Bram Stoker",
-    category: "Horror & Fiction",
-    file: "dracula-bram-stoker.pdf",
-    icon: "🧛"
-  },
-  {
-    title: "Frankenstein",
-    author: "Mary Shelley",
-    category: "Horror & Fiction",
-    file: "frankenstein-mary-shelley.pdf",
-    icon: "⚡"
-  },
-  {
-    title: "Healthy Cookbook",
-    author: "University of California, Riverside",
-    category: "Cooking",
-    file: "Healthy-Cookbook-University-of-California-Riverside.pdf",
-    icon: "🍎"
-  },
-  {
-    title: "Let's Go Birding!",
-    author: "Ted Floyd",
-    category: "Birds & Nature",
-    file: "lets-go-birding-ted-floyd.pdf",
-    icon: "🐦"
-  },
-  {
-    title: "Pride and Prejudice",
-    author: "Jane Austen",
-    category: "Classic Literature",
-    file: "pride-and-prejudice-jane-austen (1).pdf",
-    icon: "📜"
-  },
-  {
-    title: "State of the World's Birds",
-    author: "BirdLife International",
-    category: "Birds & Nature",
-    file: "state-of-the-worlds-birds-birdlife-international.pdf",
-    icon: "🦜"
+// ========================================
+// FAVOURITES STORAGE
+// ========================================
+
+function loadFavorites() {
+  try {
+    favorites = JSON.parse(
+      localStorage.getItem("booknovaFavorites") || "[]"
+    );
+  } catch {
+    favorites = [];
   }
+}
+
+function saveFavorites() {
+  localStorage.setItem(
+    "booknovaFavorites",
+    JSON.stringify(favorites)
+  );
+}
+
+// ========================================
+// GOOGLE DRIVE BOOKS
+// 49 UNIQUE PDF BOOKS
+// ========================================
+
+const rawBooks = [
+
+  // FOOD & DRINKS
+
+  ["1Fpf60Hp19F8sZWZxf7rsHDvbzeUWdztR", "Food & Drinks", 1],
+  ["1NPp34SldgYYqLZ7zU1y6ssRgiMx2v4Eg", "Food & Drinks", 2],
+  ["169QrK29BpvK3tSwQ0WtFiPZmR4A61hTN", "Food & Drinks", 3],
+  ["1ri27PYI2bnXJK7Zbq0oRmkvNnWT_ksjJ", "Food & Drinks", 4],
+  ["1nEO1gSZMqNYq-MgAhTOS6WO2YCZROmHX", "Food & Drinks", 5],
+  ["1S0lVg-ojIg770tDX7Ub-jbtdwexYwO2B", "Food & Drinks", 6],
+  ["18F2lYCLQTpHfeuWhXdJOCsE6tKb5QNtF", "Food & Drinks", 7],
+  ["1UUPRGTttW_CaukvBiOdqRBacnqmpnweM", "Food & Drinks", 8],
+  ["1y_vCARoBnfZzkhDDrcaqaWn-J-t0trPx", "Food & Drinks", 9],
+  ["15f_O46JAmb4Vec4KgfGi8WO1q8TzK2ej", "Food & Drinks", 10],
+
+  // PSYCHOLOGY
+
+  ["1IQm2VpxkpozWH5n5dYFPER-xd4ZSNEOk", "Psychology", 1],
+  ["1TgzevIbuUYAcrck-o3mfJuDwSbcC_5Vo", "Psychology", 2],
+  ["1R3Mi1zU42xmAj3MTf1-ML-kUgQ9QsAok", "Psychology", 3],
+  ["1gM-Q8SAeW4OsqTsB_bRb06UbRs4b6JEw", "Psychology", 4],
+  ["1Y0gSPt3KsqW4l_FgzSrCfrfLhKXeYjkH", "Psychology", 5],
+  ["1Ru5UEGvx5IvZPgEis57WGCQCMlMDasWl", "Psychology", 6],
+  ["197ymv9l4ZHRNF1Xuxc5JGBUNF5NgItcZ", "Psychology", 7],
+  ["1wjEDkszF_nkWSb4dkpGz7SberxMt6TE4", "Psychology", 8],
+  ["1U42oCDab4SrFMxkUxrbUs9Ty50Zqmupv", "Psychology", 9],
+  ["1uv_29zIm9N4kAq_MyNUyGlNCIiljHlWn", "Psychology", 10],
+
+  // LOVE STORY
+
+  ["1Eny65PxkjCvjwPW7XMGltckvASHuw7Gn", "Love Story", 1],
+  ["1i_1SS7LmcgNF5ZaVDk4KaDn-6LJbACs2", "Love Story", 2],
+  ["1k9tnB65AypaW6kHlkRh8JpWGfubZy0DM", "Love Story", 3],
+  ["1MpOUi3ZXp4ayLQd3uFbeU07eiOKRasBD", "Love Story", 4],
+  ["1Dsd-EnUvi7tmIqiXDlg4xe-OsE5n6Hag", "Love Story", 5],
+  ["1kmZ-DW82RL4f-AP9votM6HGS3jecxp8n", "Love Story", 6],
+  ["1hrTAfj9luwXyZB9FtQ3Gf1JcDXG98C5q", "Love Story", 7],
+  ["1aHanMhEd9HSjbo8cxW3j67Z03iiO0bYP", "Love Story", 8],
+  ["1oubxYkUvRc6O1weS1lbcgT_4-0FBD9h0", "Love Story", 9],
+
+  // HORROR
+
+  ["1MRZEAneIwyVy_GBkI1gPtmsftsnvBhl1", "Horror", 1],
+  ["10ou6cIoHULMrET9T3LTtIdZ835iCEFw4", "Horror", 2],
+  ["1dM4PNSN1eCTtHAcIY7HVpTPhYw2mgpgd", "Horror", 3],
+  ["11CDbVxfstgHe1muHLa69NHboyiMHRM5o", "Horror", 4],
+  ["1VSF9AN5LwoAYJvuGcgLb20J7SH2pdAla", "Horror", 5],
+  ["1QYyilwkZR1yx6arhaFcdMpXbp5lMwOVi", "Horror", 6],
+  ["1WSKSSJC8Gz-SFZqwEXJshmDkPu09FQsl", "Horror", 7],
+  ["1w7fuvNAOpWKy7G8vnWSqt11IxKHK0Ukq", "Horror", 8],
+  ["1LYHD8TTOQqJRXZPjJO8ZV1r3clP_42Xd", "Horror", 9],
+  ["1BynkWD-Ed-G9l2eduUn14_4ApunR1V-t", "Horror", 10],
+
+  // BIRDS & NATURE
+
+  ["1AkBCgT35No8XiKDg7JeSKnP3e6E-AC18", "Birds & Nature", 1],
+  ["1yxe6xo-h_wVAlh3uGXD_GNMymKRDhehT", "Birds & Nature", 2],
+  ["1liDR8LKVYNQeTh4Jj61_icx3g-siRYPq", "Birds & Nature", 3],
+  ["1BTVZEx9749cxNpxfS55zBU6De77VofB8", "Birds & Nature", 4],
+  ["1c6dPnQHSHrGbVQ-TKrH3OeS3jvfz2Y-4", "Birds & Nature", 5],
+  ["1gwst9E1pG7AtmxmWKrakMqRoXABkX7Qp", "Birds & Nature", 6],
+  ["1RUzskw1zAMVe6duE-AffeuaAwX4W0Kgw", "Birds & Nature", 7],
+  ["1Gd3BexBdl0nVlY-_nIoNeIyzOW-kQvPa", "Birds & Nature", 8],
+  ["10Ips0tW79MwY3X5HcfGaF4tvDwmwKXH8", "Birds & Nature", 9],
+  ["1ZlnaYJw3w1ergogWnG-VGfrtAdlE6V4r", "Birds & Nature", 10]
+
 ];
 
-// Create a path to a PDF in the books folder
-function getPdfPath(fileName) {
-  return "books/" + encodeURIComponent(fileName)
-    .replace(/%2F/g, "/");
-}
+// Create book objects
 
-// Render the first page of a PDF inside its book cover
-async function loadPdfCover(canvas, book, fallback) {
-  if (!window.pdfjsLib) {
-    fallback.style.display = "flex";
-    return;
-  }
+const driveBooks = rawBooks.map(([driveId, category, number]) => ({
+  id: "drive-" + driveId,
+  driveId: driveId,
+  category: category,
+  title: `${category} Book ${String(number).padStart(2, "0")}`,
+  author: "Open PDF for book details",
+  icon: CATS[category],
+  source: "drive"
+}));
 
-  try {
-    const pdfPath = getPdfPath(book.file);
-    const pdf = await pdfjsLib.getDocument(pdfPath).promise;
-    const page = await pdf.getPage(1);
+// ========================================
+// FIREBASE GOOGLE LOGIN USER DETAILS
+// DO NOT CHANGE YOUR LOGIN CODE
+// ========================================
 
-    const coverWidth = 240;
-    const coverHeight = 180;
-    const originalViewport = page.getViewport({ scale: 1 });
-
-    const scale = Math.min(
-      coverWidth / originalViewport.width,
-      coverHeight / originalViewport.height
-    );
-
-    const viewport = page.getViewport({ scale });
-
-    const outputScale = window.devicePixelRatio || 1;
-
-    canvas.width = Math.floor(viewport.width * outputScale);
-    canvas.height = Math.floor(viewport.height * outputScale);
-
-    canvas.style.width = `${viewport.width}px`;
-    canvas.style.height = `${viewport.height}px`;
-    canvas.style.display = "block";
-
-    const context = canvas.getContext("2d");
-
-    await page.render({
-      canvasContext: context,
-      viewport: viewport,
-      transform: outputScale !== 1
-        ? [outputScale, 0, 0, outputScale, 0, 0]
-        : null
-    }).promise;
-
-    fallback.style.display = "none";
-  } catch (error) {
-    console.error("Could not load PDF cover:", book.title, error);
-    canvas.style.display = "none";
-    fallback.style.display = "flex";
-  }
-}
-
-
- // Load the logged-in user's details
 try {
-  const googleUser = JSON.parse(
+
+  const user = JSON.parse(
     sessionStorage.getItem("booknovaUser") || "null"
   );
 
-  const emailLoginName = sessionStorage.getItem("readerName");
+  if (user) {
 
-  const name =
-    (googleUser && (googleUser.name || googleUser.email)) ||
-    emailLoginName ||
-    "Reader";
+    const name = user.name || user.email || "Reader";
 
-  const firstName = name.trim().split(/\s+/)[0] || "Reader";
+    $("userName").textContent = name.split(" ")[0];
 
-  const userName = document.getElementById("userName");
-  const avatar = document.getElementById("avatar");
+    if (user.photo) {
 
-  if (userName) {
-    userName.textContent = firstName;
-  }
-
-  if (avatar) {
-    if (googleUser && googleUser.photo) {
       const img = document.createElement("img");
-      img.src = googleUser.photo;
+
+      img.src = user.photo;
       img.alt = "Profile photo";
-      avatar.replaceChildren(img);
+
+      $("avatar").replaceChildren(img);
+
     } else {
-      avatar.textContent = firstName.charAt(0).toUpperCase();
+
+      $("avatar").textContent =
+        name.charAt(0).toUpperCase();
+
     }
   }
+
 } catch (error) {
-  console.error("Could not load user details:", error);
 
-  const userName = document.getElementById("userName");
-  const avatar = document.getElementById("avatar");
+  console.warn("Unable to load user details:", error);
 
-  if (userName) userName.textContent = "Reader";
-  if (avatar) avatar.textContent = "R";
 }
 
+// ========================================
+// INDEXED DB STORAGE
+// ========================================
 
-// Create category buttons
-const categories = [
-  "All Books",
-  ...new Set(books.map(book => book.category))
-];
+const DB = "BookNovaPDFs";
+const STORE = "books";
 
-categories.forEach(category => {
-  const button = document.createElement("button");
+function dbOpen() {
 
-  button.type = "button";
-  button.textContent = category;
-  button.dataset.category = category;
+  return new Promise((resolve, reject) => {
 
-  button.style.cssText = `
-    padding: 9px 15px;
-    border: 1px solid #1565c0;
-    border-radius: 20px;
-    background: white;
-    color: #1565c0;
-    cursor: pointer;
-    font-size: 13px;
-  `;
+    const request = indexedDB.open(DB, 1);
 
-  button.addEventListener("click", () => {
-    selectedCategory = category;
-    updateCategoryButtons();
-    renderBooks();
+    request.onupgradeneeded = () => {
+
+      if (!request.result.objectStoreNames.contains(STORE)) {
+
+        request.result.createObjectStore(STORE, {
+          keyPath: "id"
+        });
+
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+
+    request.onerror = () => reject(request.error);
+
   });
 
-  categoryFilters.appendChild(button);
-});
-
-// Highlight selected category
-function updateCategoryButtons() {
-  categoryFilters.querySelectorAll("button").forEach(button => {
-    const active = button.dataset.category === selectedCategory;
-
-    button.style.background = active ? "#1565c0" : "white";
-    button.style.color = active ? "white" : "#1565c0";
-  });
 }
 
-// Display book cards
+async function dbGetAll() {
+
+  const db = await dbOpen();
+
+  return new Promise((resolve, reject) => {
+
+    const request = db.transaction(STORE)
+      .objectStore(STORE)
+      .getAll();
+
+    request.onsuccess = () => {
+      db.close();
+      resolve(request.result || []);
+    };
+
+    request.onerror = () => {
+      db.close();
+      reject(request.error);
+    };
+
+  });
+
+}
+
+async function dbPut(book) {
+
+  const db = await dbOpen();
+
+  return new Promise((resolve, reject) => {
+
+    const transaction = db.transaction(STORE, "readwrite");
+
+    transaction.objectStore(STORE).put(book);
+
+    transaction.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+
+    transaction.onerror = () => {
+      db.close();
+      reject(transaction.error);
+    };
+
+  });
+
+}
+
+async function dbDelete(id) {
+
+  const db = await dbOpen();
+
+  return new Promise((resolve, reject) => {
+
+    const transaction = db.transaction(STORE, "readwrite");
+
+    transaction.objectStore(STORE).delete(id);
+
+    transaction.oncomplete = () => {
+      db.close();
+      resolve();
+    };
+
+    transaction.onerror = () => {
+      db.close();
+      reject(transaction.error);
+    };
+
+  });
+
+}
+
+// ========================================
+// ALL BOOKS
+// ========================================
+
+function allBooks() {
+
+  return [...driveBooks, ...uploadedBooks];
+
+}
+
+// ========================================
+// BOOK COVER
+// ========================================
+
+function coverFor(book) {
+
+  const wrap = document.createElement("div");
+
+  wrap.className = "cover-wrap";
+
+  const fallback = document.createElement("div");
+
+  fallback.className = "cover-fallback";
+
+  const emoji = document.createElement("span");
+
+  emoji.className = "cover-emoji";
+  emoji.textContent = book.icon || "📘";
+
+  const title = document.createElement("strong");
+
+  title.textContent = book.title;
+
+  const category = document.createElement("small");
+
+  category.textContent = book.category;
+
+  fallback.append(emoji, title, category);
+
+  wrap.append(fallback);
+
+  // Google Drive book cover thumbnail
+
+  if (book.driveId) {
+
+    const img = document.createElement("img");
+
+    img.alt = book.title + " cover";
+    img.loading = "lazy";
+
+    img.src =
+      `https://drive.google.com/thumbnail?id=${encodeURIComponent(book.driveId)}&sz=w500`;
+
+    img.onerror = () => img.remove();
+
+    wrap.append(img);
+
+  }
+
+  return wrap;
+
+}
+
+// ========================================
+// OPEN PDF
+// ========================================
+
+function openBook(book) {
+
+  if (book.fileBlob) {
+
+    const url = URL.createObjectURL(book.fileBlob);
+
+    const newWindow = window.open(url, "_blank");
+
+    if (!newWindow) {
+
+      showToast("Please allow pop-ups to open the PDF.");
+
+    }
+
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 60000);
+
+  } else if (book.driveId) {
+
+    window.open(
+      `https://drive.google.com/file/d/${encodeURIComponent(book.driveId)}/preview`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+
+  }
+
+}
+
+// ========================================
+// FAVOURITE BOOKS
+// ========================================
+
+function toggleFavorite(book) {
+
+  if (favorites.includes(book.id)) {
+
+    favorites = favorites.filter(id => id !== book.id);
+
+  } else {
+
+    favorites.push(book.id);
+
+  }
+
+  saveFavorites();
+
+  renderBooks();
+
+  showToast(
+    favorites.includes(book.id)
+      ? "Added to favourites."
+      : "Removed from favourites."
+  );
+
+}
+
+// ========================================
+// CATEGORY FILTERS
+// ========================================
+
+function renderCategories() {
+
+  categoryFilters.replaceChildren();
+
+  categories.forEach(category => {
+
+    const button = document.createElement("button");
+
+    button.type = "button";
+
+    button.className =
+      "category-chip" +
+      (selectedCategory === category ? " active" : "");
+
+    button.textContent = category;
+
+    button.onclick = () => {
+
+      selectedCategory = category;
+      mode = "all";
+
+      renderCategories();
+      renderBooks();
+
+    };
+
+    categoryFilters.append(button);
+
+  });
+
+}
+
+// ========================================
+// DISPLAY BOOKS
+// ========================================
+
 function renderBooks() {
+
+  let list = allBooks();
+
   const query = searchInput.value.toLowerCase().trim();
 
-  const filteredBooks = books.filter(book => {
-    const matchesCategory =
-      selectedCategory === "All Books" ||
-      book.category === selectedCategory;
+  if (mode === "favorites") {
 
-    const searchableText =
-      `${book.title} ${book.author} ${book.category}`.toLowerCase();
+    $("booksHeading").textContent = "My Favourites";
 
-    const matchesSearch = searchableText.includes(query);
+    list = list.filter(book =>
+      favorites.includes(book.id)
+    );
 
-    return matchesCategory && matchesSearch;
+  } else {
+
+    $("booksHeading").textContent =
+      selectedCategory === "All Books"
+        ? "Recommended For You"
+        : selectedCategory;
+
+    if (selectedCategory !== "All Books") {
+
+      list = list.filter(book =>
+        book.category === selectedCategory
+      );
+
+    }
+
+  }
+
+  // Search books
+
+  list = list.filter(book => {
+
+    const text =
+      `${book.title} ${book.author || ""} ${book.category}`;
+
+    return text.toLowerCase().includes(query);
+
   });
 
   bookGrid.replaceChildren();
 
-  filteredBooks.forEach(book => {
+  // Create cards
+
+  list.forEach(book => {
+
     const card = document.createElement("article");
+
     card.className = "book-card";
 
-    // Book cover container
-    const cover = document.createElement("div");
-
-    cover.className = "pdf-cover";
-    cover.style.cssText = `
-      width: 100%;
-      height: 190px;
-      box-sizing: border-box;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-      background: #f1f5f9;
-      border-radius: 10px;
-      padding: 5px;
-    `;
-
-    // Canvas displays the actual first page of the PDF
-    const canvas = document.createElement("canvas");
-    canvas.style.cssText = `
-      display: none;
-      max-width: 100%;
-      max-height: 180px;
-      object-fit: contain;
-    `;
-
-    // Fallback shown if the PDF cover cannot be loaded
-    const fallback = document.createElement("div");
-    fallback.style.cssText = `
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 10px;
-      font-size: 42px;
-    `;
-
-    const icon = document.createElement("span");
-    icon.textContent = book.icon;
-
-    const categoryLabel = document.createElement("span");
-    categoryLabel.textContent = book.category;
-    categoryLabel.style.cssText = `
-      font-size: 12px;
-      color: #1565c0;
-      font-weight: 600;
-      text-align: center;
-      padding: 0 8px;
-    `;
-
-    fallback.append(icon, categoryLabel);
-    cover.append(canvas, fallback);
-
-    // Load the PDF cover without blocking the other book cards
-    loadPdfCover(canvas, book, fallback);
+    card.append(coverFor(book));
 
     const title = document.createElement("h3");
+
     title.textContent = book.title;
 
     const author = document.createElement("p");
+
     author.className = "author";
-    author.textContent = "by " + book.author;
+    author.textContent = "by " + (book.author || "Unknown");
 
     const category = document.createElement("p");
-    category.style.cssText =
-      "font-size:12px;color:#64748b;margin:6px 0;";
+
+    category.className = "book-category";
     category.textContent = "Category: " + book.category;
 
     const bottom = document.createElement("div");
+
     bottom.className = "book-bottom";
 
     const status = document.createElement("span");
+
     status.className = "available";
     status.textContent = "● Available";
 
-    const openButton = document.createElement("button");
-    openButton.className = "reserve-btn";
-    openButton.textContent = "Open PDF";
-    openButton.type = "button";
+    const actions = document.createElement("div");
 
-    openButton.addEventListener("click", () => {
-      const pdfPath = getPdfPath(book.file);
-      window.open(pdfPath, "_blank", "noopener");
-    });
+    actions.className = "book-actions";
 
-    bottom.append(status, openButton);
-    card.append(cover, title, author, category, bottom);
-    bookGrid.appendChild(card);
+    // Favourite button
+
+    const fav = document.createElement("button");
+
+    fav.type = "button";
+
+    fav.className =
+      "favorite-btn" +
+      (favorites.includes(book.id) ? " is-favorite" : "");
+
+    fav.textContent =
+      favorites.includes(book.id) ? "♥" : "♡";
+
+    fav.title = "Favourite";
+
+    fav.onclick = () => toggleFavorite(book);
+
+    // Open PDF button
+
+    const open = document.createElement("button");
+
+    open.type = "button";
+    open.className = "reserve-btn";
+    open.textContent = "Open PDF";
+
+    open.onclick = () => openBook(book);
+
+    actions.append(fav, open);
+
+    // Delete uploaded books
+
+    if (book.source === "upload") {
+
+      const del = document.createElement("button");
+
+      del.type = "button";
+      del.className = "delete-btn";
+      del.textContent = "Delete";
+
+      del.onclick = async () => {
+
+        if (confirm(`Delete ${book.title}?`)) {
+
+          await dbDelete(book.id);
+
+          uploadedBooks = uploadedBooks.filter(
+            item => item.id !== book.id
+          );
+
+          favorites = favorites.filter(
+            id => id !== book.id
+          );
+
+          saveFavorites();
+
+          renderBooks();
+
+          showToast("Book deleted.");
+
+        }
+
+      };
+
+      actions.append(del);
+
+    }
+
+    bottom.append(status, actions);
+
+    card.append(
+      title,
+      author,
+      category,
+      bottom
+    );
+
+    bookGrid.append(card);
+
   });
 
-  emptyMessage.hidden = filteredBooks.length !== 0;
+  emptyMessage.hidden = list.length !== 0;
+
+  $("bookCountLabel").textContent =
+    `${list.length} book${list.length === 1 ? "" : "s"} shown`;
+
 }
 
-// Search by book name, author, or category
-searchInput.addEventListener("input", renderBooks);
+// TOP SEARCH BAR REDIRECT
 
-// View all books
-document.getElementById("viewAllBtn").addEventListener("click", () => {
-  searchInput.value = "";
+const topSearchBox = document.querySelector(".search-box");
+
+if (topSearchBox) {
+  topSearchBox.addEventListener("click", () => {
+    window.location.href = "./book-search.html";
+  });
+}
+
+// ========================================
+// VIEW ALL BOOKS
+// ========================================
+
+$("viewAllBtn").onclick = () => {
+
+  // Show all 49 Google Drive books
   selectedCategory = "All Books";
-  updateCategoryButtons();
+  mode = "all";
+
+  // Clear search text
+  searchInput.value = "";
+
+  // Show all categories and books
+  renderCategories();
   renderBooks();
-  showToast("Showing all 8 PDF books.");
-});
 
-// Notification and summary buttons
-document.getElementById("notificationBtn").addEventListener("click", () => {
+  // Scroll to books section
+  $("booksSection").scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+
+  showToast("Showing all 49 books!");
+
+};
+
+// ========================================
+// NOTIFICATIONS
+// ========================================
+
+$("notificationBtn").onclick = () => {
+
   showToast("Welcome to BookNova!");
-});
 
-document.getElementById("issuedBtn").addEventListener("click", () => {
-  showToast("Issued-book tracking can be connected to your database.");
-});
+};
 
-document.getElementById("dueBtn").addEventListener("click", () => {
-  showToast("Return-date tracking can be connected to your database.");
-});
+// ========================================
+// ISSUED BOOKS
+// ========================================
 
-// Explore shortcuts
+$("issuedBtn").onclick = () => {
+
+  showToast(
+    "Issued-book tracking is not connected to a database yet."
+  );
+
+};
+
+// ========================================
+// DUE BOOKS
+// ========================================
+
+$("dueBtn").onclick = () => {
+
+  showToast(
+    "Due-date tracking is not connected to a database yet."
+  );
+
+};
+
+// ========================================
+// EXPLORE LIBRARY SHORTCUTS
+// ========================================
+
 document.querySelectorAll(".shortcut").forEach(button => {
-  button.addEventListener("click", () => {
+
+  button.onclick = () => {
+
     const action = button.dataset.action;
 
     if (action === "books") {
-      searchInput.value = "";
+
+      mode = "all";
       selectedCategory = "All Books";
-      updateCategoryButtons();
+      searchInput.value = "";
+
+      renderCategories();
       renderBooks();
 
-      bookGrid.scrollIntoView({ behavior: "smooth" });
-    } else if (action === "categories") {
-      categoryFilters.scrollIntoView({ behavior: "smooth" });
-      showToast("Choose a category to filter books.");
-    } else if (action === "library") {
-      showToast("My Library can be connected to your account later.");
-    } else if (action === "reserve") {
-      showToast("Click Open PDF to read a book.");
-      bookGrid.scrollIntoView({ behavior: "smooth" });
+      $("booksSection").scrollIntoView({
+        behavior: "smooth"
+      });
+
     }
-  });
-});
 
-// Bottom navigation
-document.querySelectorAll(".nav-item").forEach(button => {
-  button.addEventListener("click", () => {
-    const page = button.dataset.page;
+    if (action === "categories") {
 
-    document.querySelectorAll(".nav-item").forEach(item => {
-      item.classList.toggle("active", item === button);
-    });
-
-    if (page === "home") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    } else if (page === "search") {
-      searchInput.focus();
-      searchInput.scrollIntoView({
+      categoryFilters.scrollIntoView({
         behavior: "smooth",
         block: "center"
       });
-    } else if (page === "library") {
-      showToast("My Library can be connected to your account later.");
-    } else if (page === "profile") {
-      let user = {};
 
-      try {
-        user = JSON.parse(
-          sessionStorage.getItem("booknovaUser") || "{}"
-        );
-      } catch (error) {
-        console.error(error);
-      }
+      showToast("Choose a category.");
+
+    }
+
+    if (action === "library") {
+
+      mode = "favorites";
+      searchInput.value = "";
+
+      renderBooks();
+
+      $("booksSection").scrollIntoView({
+        behavior: "smooth"
+      });
+
+      showToast("Showing favourite books.");
+
+    }
+
+    if (action === "reserve") {
 
       showToast(
-        user.email
-          ? "Signed in as " + user.email
-          : "Profile details unavailable."
+        "Reservation needs a library database. You can open PDFs now."
       );
+
+      $("booksSection").scrollIntoView({
+        behavior: "smooth"
+      });
+
     }
+
+  };
+
+});
+
+// ========================================
+// BOTTOM NAVIGATION
+// ========================================
+// ========================================
+// BOTTOM NAVIGATION
+// ========================================
+
+document.querySelectorAll(".nav-item").forEach(button => {
+  button.addEventListener("click", () => {
+
+    const page = button.dataset.page;
+
+    if (page === "search") {
+      window.location.href = "./book-search.html";
+      return;
+    }
+
+    if (page === "home") {
+      window.location.href = "./home.html";
+      return;
+    }
+
+    if (page === "library") { 
+      mode = "favorites";
+      searchInput.value = "";
+      renderBooks();
+      $("booksSection").scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+
+    if (page === "profile") {
+      showToast("Profile button clicked.");
+      return;
+    }
+
   });
 });
 
-// Initial display
-updateCategoryButtons();
-renderBooks();
+// ========================================
+// INITIALIZE DASHBOARD
+// ========================================
+
+(async function initializeDashboard() {
+
+  loadFavorites();
+
+  renderCategories();
+
+  try {
+
+    uploadedBooks = await dbGetAll();
+
+  } catch (error) {
+
+    console.warn(error);
+
+    showToast(
+      "Browser storage unavailable; Drive PDFs can still open."
+    );
+
+  }
+
+  renderBooks();
+
+})();
