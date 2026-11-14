@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,9 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>BookNova - Login</title>
-    <link rel ="stylesheet"href="login.css">
-    <script src="login.js" defer></script>
 
+    <link rel="stylesheet" href="login.css">
+
+    <!-- Firebase Login JavaScript -->
+    <script type="module" src="login.js"></script>
 </head>
 
 <body>
@@ -44,7 +47,10 @@
                     placeholder="Enter your password"
                 >
 
-                <span class="eye" onclick="togglePassword()">👁</span>
+                <span
+                    class="eye"
+                    onclick="togglePassword()"
+                >👁</span>
 
             </div>
         </div>
@@ -53,7 +59,12 @@
             <a href="#">Forgot Password?</a>
         </div>
 
-        <button class="login-btn" onclick="login()">
+        <!-- Normal Login Button -->
+        <button
+            class="login-btn"
+            id="loginBtn"
+            type="button"
+        >
             Login
         </button>
 
@@ -63,8 +74,13 @@
             OR
         </div>
 
-        <button class="google-btn" onclick="googleLogin()">
-                 🔵 Continue with Google
+        <!-- Google Login Button -->
+        <button
+            class="google-btn"
+            id="googleBtn"
+            type="button"
+        >
+            🔵 Continue with Google
         </button>
 
         <div class="register">
@@ -73,71 +89,6 @@
         </div>
 
     </div>
-
-
-    <script>
-
-        function togglePassword() {
-
-            const password =
-                document.getElementById("password");
-
-            if (password.type === "password") {
-
-                password.type = "text";
-
-            } else {
-
-                password.type = "password";
-            }
-        }
-
-        async function login() {
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const message = document.getElementById("message");
-
-    if (!email || !password) {
-        message.style.color = "red";
-        message.textContent = "Please enter email and password.";
-        return;
-    }
-
-    try {
-        const response = await fetch(
-            "https://booknova.onrender.com/api/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ email, password })
-            }
-        );
-
-        const result = await response.json();
-
-        if (response.ok) {
-            sessionStorage.setItem(
-                "booknovaUser",
-                JSON.stringify(result.user)
-            );
-
-            message.style.color = "green";
-            message.textContent = "Login successful!";
-
-            window.location.href = "./home.html";
-        } else {
-            message.style.color = "red";
-            message.textContent = result.message;
-        }
-
-    } catch (error) {
-        message.style.color = "red";
-        message.textContent = "Unable to connect to server.";
-    }
-}
-</script>
 
 </body>
 </html>
