@@ -1,112 +1,214 @@
 
-const books = [
-    {
-        title: "Cognitive Psychology",
-        author: "College of the Canyons",
-        category: "Psychology",
-        file: "Cognitive-Psychology-College-of-the-Canyons.pdf",
-        icon: "🧠"
-    },
-    {
-        title: "Creative Vegetarian Cooking",
-        author: "Radha Soami Satsang Beas",
-        category: "Cooking",
-        file: "Creative-Vegetarian-Cooking-Radha-Soami-Satsang-Beas.pdf",
-        icon: "🥗"
-    },
-    {
-        title: "Dracula",
-        author: "Bram Stoker",
-        category: "Horror & Fiction",
-        file: "dracula-bram-stoker.pdf",
-        icon: "🧛"
-    },
-    {
-        title: "Frankenstein",
-        author: "Mary Shelley",
-        category: "Horror & Fiction",
-        file: "frankenstein-mary-shelley.pdf",
-        icon: "⚡"
-    },
-    {
-        title: "Healthy Cookbook",
-        author: "University of California, Riverside",
-        category: "Cooking",
-        file: "Healthy-Cookbook-University-of-California-Riverside.pdf",
-        icon: "🍎"
-    },
-    {
-        title: "Let's Go Birding!",
-        author: "Ted Floyd",
-        category: "Birds & Nature",
-        file: "lets-go-birding-ted-floyd.pdf",
-        icon: "🐦"
-    },
-    {
-        title: "Pride and Prejudice",
-        author: "Jane Austen",
-        category: "Classic Literature",
-        file: "pride-and-prejudice-jane-austen (1).pdf",
-        icon: "📜"
-    },
-    {
-        title: "State of the World's Birds",
-        author: "BirdLife International",
-        category: "Birds & Nature",
-        file: "state-of-the-worlds-birds-birdlife-international.pdf",
-        icon: "🦜"
-    }
-];
-
-const bookGrid = document.getElementById("bookGrid");
 const searchInput = document.getElementById("searchInput");
+const clearSearch = document.getElementById("clearSearch");
+const categoryButtons = document.getElementById("categoryButtons");
+const bookGrid = document.getElementById("bookGrid");
+const bookCount = document.getElementById("bookCount");
 const noBooks = document.getElementById("noBooks");
+const viewAllBtn = document.getElementById("viewAllBtn");
 
-function renderBooks(bookList) {
+let allBooks = [];
+let selectedCategory = "All Books";
+
+const categoryEmojis = {
+    "Food & Drinks": "🍹",
+    "Love Story": "❤️",
+    "Birds & Nature": "🐦",
+    "Psychology": "🧠",
+    "Horror": "👻"
+};
+
+// Load books from PHP
+
+async function loadBooks() {
+    try {
+        const response = await fetch("get-books.php");
+
+        if (!response.ok) {
+            throw new Error("PHP file not found: " + response.status);
+        }
+
+        const response1 = await fetch("get-books.php");
+
+        const result = await response.text();
+
+        console.log("PHP Response:", result);
+
+        if (!response1.ok) {
+            throw new Error("PHP Error: " + response.status);
+        }
+
+const books = JSON.parse(result);
+        allBooks = books;
+
+        displayBooks();
+
+    } catch (error) {
+        console.error("PHP Connection Error:", error);
+        bookCount.textContent = "Books could not be loaded";
+        bookGrid.innerHTML = "<p>" + error.message + "</p>";
+    }
+}
+
+loadBooks();
+
+
+// Category filter
+categoryButtons.addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-category]");
+
+    if (!button) return;
+
+    selectedCategory = button.dataset.category;
+
+    document.querySelectorAll(".category-buttons button").forEach(btn => {
+        btn.classList.toggle("active", btn === button);
+    });
+
+    displayBooks();
+});
+
+// Display book cards
+function displayBooks() {
+    const searchText = searchInput.value.toLowerCase().trim();
+
+    const filteredBooks = allBooks.filter(book => {
+        const categoryMatch =
+            selectedCategory === "All Books" ||
+            book.category === selectedCategory;
+
+        const searchMatch =
+            book.title.toLowerCase().includes(searchText) ||
+            book.category.toLowerCase().includes(searchText);
+
+        return categoryMatch && searchMatch;
+    });
+
     bookGrid.innerHTML = "";
 
-    noBooks.hidden = bookList.length !== 0;
+    bookCount.textContent =
+        `${filteredBooks.length} books shown`;
 
-    bookList.forEach(book => {
-        const card = document.createElement("div");
+    noBooks.style.display =
+        filteredBooks.length === 0 ? "block" : "none";
+
+    filteredBooks.forEach(book => {
+        const card = document.createElement("article");
         card.className = "book-card";
 
-        const icon = document.createElement("div");
-        icon.className = "book-icon";
-        icon.textContent = book.icon;
+        const cover = document.createElement("div");
+        cover.className = "book-cover";
+
+        const emoji = document.createElement("div");
+        emoji.className = "book-emoji";
+        emoji.textContent = categoryEmojis[book.category] || "📘";
+
+        const coverTitle = document.createElement("h3");
+        coverTitle.textContent = book.title;
+
+        const coverCategory = document.createElement("p");
+        coverCategory.textContent = book.category;
+
+        cover.append(emoji, coverTitle, coverCategory);
+
+        const details = document.createElement("div");
+        details.className = "book-details";
 
         const title = document.createElement("h3");
         title.textContent = book.title;
 
-        const author = document.createElement("p");
-        author.textContent = "Author: " + book.author;
+        const description = document.createElement("p");
+        description.textContent = "By Open PDF for book details";
 
-        const category = document.createElement("span");
-        category.className = "category";
-        category.textContent = book.category;
+        const category = document.createElement("p");
+        category.textContent = "Category: " + book.category;
 
-        const openButton = document.createElement("a");
-        openButton.className = "open-btn";
-        openButton.textContent = "Open PDF";
-        openButton.href = "books/" + encodeURIComponent(book.file);
-        openButton.target = "_blank";
-        openButton.rel = "noopener noreferrer";
+        details.append(title, description, category);
 
-        card.append(icon, title, author, category, openButton);
+        const actions = document.createElement("div");
+        actions.className = "book-actions";
+
+        const available = document.createElement("span");
+        available.className = "available";
+        available.textContent = "✓ Available";
+
+        const actionButtons = document.createElement("div");
+        actionButtons.className = "action-buttons";
+
+        const favorite = document.createElement("button");
+        favorite.className = "favorite-btn";
+        favorite.type = "button";
+        favorite.textContent = "♡";
+        favorite.title = "Add to favourites";
+
+        const favorites = JSON.parse(
+            localStorage.getItem("bookNovaFavorites") || "[]"
+        );
+
+        if (favorites.includes(book.pdf)) {
+            favorite.classList.add("active");
+            favorite.textContent = "♥";
+        }
+
+        favorite.addEventListener("click", () => {
+            let saved = JSON.parse(
+                localStorage.getItem("bookNovaFavorites") || "[]"
+            );
+
+            if (saved.includes(book.pdf)) {
+                saved = saved.filter(item => item !== book.pdf);
+                favorite.classList.remove("active");
+                favorite.textContent = "♡";
+            } else {
+                saved.push(book.pdf);
+                favorite.classList.add("active");
+                favorite.textContent = "♥";
+            }
+
+            localStorage.setItem(
+                "bookNovaFavorites",
+                JSON.stringify(saved)
+            );
+        });
+
+        const openPDF = document.createElement("a");
+        openPDF.className = "open-pdf";
+        openPDF.textContent = "Open PDF";
+        openPDF.href = book.pdf;
+        openPDF.target = "_blank";
+        openPDF.rel = "noopener";
+
+        actionButtons.append(favorite, openPDF);
+        actions.append(available, actionButtons);
+
+        card.append(cover, details, actions);
         bookGrid.appendChild(card);
     });
 }
 
-searchInput.addEventListener("input", function () {
-    const query = searchInput.value.trim().toLowerCase();
+// Search
+searchInput.addEventListener("input", displayBooks);
 
-    const filteredBooks = books.filter(book =>
-        book.title.toLowerCase().includes(query) ||
-        book.author.toLowerCase().includes(query) ||
-        book.category.toLowerCase().includes(query)
-    );
-
-    renderBooks(filteredBooks);
+// Clear search
+clearSearch.addEventListener("click", () => {
+    searchInput.value = "";
+    displayBooks();
 });
 
-renderBooks(books);
+// View all books
+viewAllBtn.addEventListener("click", () => {
+    selectedCategory = "All Books";
+
+    document.querySelectorAll(".category-buttons button").forEach(btn => {
+        btn.classList.toggle(
+            "active",
+            btn.dataset.category === "All Books"
+        );
+    });
+
+    searchInput.value = "";
+    displayBooks();
+});
+
+// Start
+loadBooks();
