@@ -44,8 +44,6 @@ async function loadBooks() {
     }
 }
 
-loadBooks();
-
 // Category filter
 categoryButtons.addEventListener("click", function(event) {
     const button = event.target.closest("button[data-category]");
