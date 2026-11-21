@@ -6,40 +6,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BookNova - Book Search</title>
     <link rel="stylesheet" href="book-search.css">
+    <script src="book-search.js" defer></script>
 </head>
 <body>
 
-<header class="topbar">
-    <div class="brand">
-        <span class="logo">📘</span>
-        <div>
-            <h1>BookNova</h1>
-            <p>Smart Library Management System</p>
+    <!-- Same BookNova Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <a href="home.html" class="brand">
+                <span class="brand-icon">📘</span>
+                <span>
+                    <strong>BookNova</strong>
+                    <small>Smart Library Management System</small>
+                </span>
+            </a>
+
+            <div class="header-actions">
+                <button class="notification-btn" type="button">♧</button>
+                <a href="profile.html" class="profile-avatar">U</a>
+            </div>
         </div>
-    </div>
-</header>
+    </header>
 
-<main class="container">
-    <h2>Search Books 📚</h2>
-    <p>Discover and read your favourite books.</p>
+    <main class="main-container">
 
-    <input
-        type="search"
-        id="searchInput"
-        placeholder="Search by book name, author or category..."
-    >
+        <!-- Welcome -->
+        <section class="welcome-section">
+            <h2>Explore Books 📚</h2>
+            <p>Discover your next favourite book today!</p>
+        </section>
 
-    <div id="bookGrid" class="book-grid"></div>
-    <p id="noBooks" hidden>No books found. Try another search.</p>
-</main>
+        <!-- Search -->
+        <section class="search-section">
+            <div class="search-box">
+                <span>🔍</span>
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search books, authors..."
+                >
+                <button id="clearSearch" type="button">Clear</button>
+            </div>
+        </section>
 
-<nav class="bottom-nav">
-    <a href="home.html">⌂ Home</a>
-    <a href="book-search.js" class="active">⌕ Search</a>
-    <a href="my-library.php">📖 My Library</a>
-    <a href="profile.html">♙ Profile</a>
+        <!-- Quick Navigation -->
+        <section class="explore-section">
+            <h3>Explore Library</h3>
+
+            <div class="explore-grid">
+                <a href="home.html" class="explore-card">
+                    <span class="explore-icon blue-icon">📖</span>
+                    <span>All Books</span>
+                </a>
+
+                <a href="#categories" class="explore-card">
+                    <span class="explore-icon green-icon">▦</span>
+                    <span>Categories</span>
+                </a>
+
+                <a href="my-library.php" class="explore-card">
+                    <span class="explore-icon yellow-icon">📚</span>
+                    <span>My Library</span>
+                </a>
+
+                <a href="my-library.php#reserved" class="explore-card">
+                    <span class="explore-icon purple-icon">▣</span>
+                    <span>Reserve</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Recommended Books -->
+        <section class="recommended-section">
+
+            <div class="section-heading">
+                <div>
+                    <h3>Recommended For You</h3>
+                    <p id="bookCount">Loading books...</p>
+                </div>
+
+                <button id="viewAllBtn" type="button">View All →</button>
+            </div>
+
+            <!-- Categories -->
+            <div class="category-buttons" id="categoryButtons">
+                <button class="active" data-category="All Books">All Books</button>
+                <button data-category="Food & Drinks">Food & Drinks</button>
+                <button data-category="Psychology">Psychology</button>
+                <button data-category="Love Story">Love Story</button>
+                <button data-category="Horror">Horror</button>
+                <button data-category="Birds & Nature">Birds & Nature</button>
+            </div>
+
+            <!-- Book Cards -->
+            <div class="book-grid" id="bookGrid"></div>
+
+            <p class="no-books" id="noBooks" style="display:none;">
+                No books found.
+            </p>
+
+        </section>
+
+    </main>
+    <!-- BookNova Bottom Navigation -->
+
+<nav class="booknova-bottom-nav">
+
+    <a href="home.html" class="booknova-nav-link">
+        <span>⌂</span>
+        <small>Home</small>
+    </a>
+
+    <a href="book-search.html" class="booknova-nav-link active">
+        <span>⌕</span>
+        <small>Search</small>
+    </a>
+
+    <a href="my-library.php" class="booknova-nav-link">
+        <span>📖</span>
+        <small>My Library</small>
+    </a>
+
+    <a href="profile.html" class="booknova-nav-link">
+        <span>♙</span>
+        <small>Profile</small>
+    </a>
+
 </nav>
-
-<script src="book-search.js"></script>
 </body>
 </html>
