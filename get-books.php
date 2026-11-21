@@ -3,16 +3,22 @@
 header('Content-Type: application/json; charset=utf-8');
 
 $baseFolder = __DIR__ . '/books';
-
-$categories = [
-    'Brids&nature books' => 'Birds & Nature',
-    'food and drinks books' => 'Food & Drinks',
-    'love story books' => 'Love Story'
-];
-
 $books = [];
 
-foreach ($categories as $folder => $category) {
+if (!is_dir($baseFolder)) {
+    echo json_encode([
+        'error' => 'Books folder not found'
+    ]);
+    exit;
+}
+
+$folders = scandir($baseFolder);
+
+foreach ($folders as $folder) {
+
+    if ($folder === '.' || $folder === '..') {
+        continue;
+    }
 
     $folderPath = $baseFolder . DIRECTORY_SEPARATOR . $folder;
 
@@ -20,7 +26,25 @@ foreach ($categories as $folder => $category) {
         continue;
     }
 
-    foreach (scandir($folderPath) as $file) {
+    $folderLower = strtolower($folder);
+
+    if (strpos($folderLower, 'bird') !== false) {
+        $category = 'Birds & Nature';
+    } elseif (strpos($folderLower, 'food') !== false) {
+        $category = 'Food & Drinks';
+    } elseif (strpos($folderLower, 'love') !== false) {
+        $category = 'Love Story';
+    } elseif (strpos($folderLower, 'horror') !== false) {
+        $category = 'Horror';
+    } elseif (strpos($folderLower, 'psychology') !== false) {
+        $category = 'Psychology';
+    } else {
+        $category = ucwords(str_replace(['-', '_'], ' ', $folder));
+    }
+
+    $files = scandir($folderPath);
+
+    foreach ($files as $file) {
 
         if ($file === '.' || $file === '..') {
             continue;
@@ -33,7 +57,7 @@ foreach ($categories as $folder => $category) {
         $title = pathinfo($file, PATHINFO_FILENAME);
         $title = str_replace(['-', '_'], ' ', $title);
         $title = preg_replace('/\s+/', ' ', $title);
-        $title = ucwords($title);
+        $title = ucwords(trim($title));
 
         $books[] = [
             'title' => $title,

@@ -28,19 +28,13 @@ async function loadBooks() {
             throw new Error("PHP file not found: " + response.status);
         }
 
-        const response1 = await fetch("get-books.php");
-
         const result = await response.text();
 
         console.log("PHP Response:", result);
 
-        if (!response1.ok) {
-            throw new Error("PHP Error: " + response.status);
-        }
+        const books = JSON.parse(result);
 
-const books = JSON.parse(result);
         allBooks = books;
-
         displayBooks();
 
     } catch (error) {
@@ -51,7 +45,6 @@ const books = JSON.parse(result);
 }
 
 loadBooks();
-
 
 // Category filter
 categoryButtons.addEventListener("click", function(event) {
