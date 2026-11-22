@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - BookNova</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="profile-header">
+        <a href="home.html" class="back-btn">‹</a>
+        <h2>My Profile</h2>
+        <button class="settings-btn" id="settingsBtn">⚙</button>
+    </header>
+
+    <main class="profile-container">
+
+        <!-- User Profile -->
+        <section class="user-section">
+            <div class="avatar" id="userAvatar">👤</div>
+            <h2 id="userName">Loading...</h2>
+            <p class="user-email" id="userEmail">Loading...</p>
+        </section>
+        <!-- Statistics -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3>Books Issued</h3>
+                <strong>12</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3>Books Read</h3>
+                <strong>25</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3>Fine</h3>
+                <strong>₹120</strong>
+            </div>
+        </section>
+
+        <!-- Profile Options -->
+        <section class="profile-menu">
+
+            <button class="menu-item" data-action="personal">
+                <span class="menu-icon">👤</span>
+                <span>Personal Info</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item" data-action="password">
+                <span class="menu-icon">🔒</span>
+                <span>Change Password</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item" data-action="statistics">
+                <span class="menu-icon">📊</span>
+                <span>Reading Statistics</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item" data-action="settings">
+                <span class="menu-icon">⚙️</span>
+                <span>Settings</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item logout-item" data-action="logout">
+                <span class="menu-icon">🚪</span>
+                <span>Logout</span>
+                <span class="arrow">›</span>
+            </button>
+
+        </section>
+
+    </main>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+
+        <a href="home.html" class="nav-item">
+            <span>⌂</span>
+            <small>Home</small>
+        </a>
+
+        <a href="book-search.html" class="nav-item">
+            <span>⌕</span>
+            <small>Search</small>
+        </a>
+
+        <a href="my-library.php" class="nav-item">
+            <span>📖</span>
+            <small>My Library</small>
+        </a>
+
+        <a href="profile.html" class="nav-item active">
+            <span>♙</span>
+            <small>Profile</small>
+        </a>
+
+    </nav>
+
+    <script src="profile.js"></script>
+
+</body>
+</html>
