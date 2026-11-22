@@ -26,6 +26,103 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+// Close Settings Popup
+    const settingsModal = document.getElementById("settingsModal");
+    // Notifications Popup
+
+    // Save Notification Preference
+    const notificationToggle = document.getElementById("notificationToggle");
+
+    // Load saved setting
+    const savedNotification = localStorage.getItem("booknovaNotifications");
+
+    if (savedNotification !== null) {
+        notificationToggle.checked = savedNotification === "true";
+    }
+
+    // Save when toggle changes
+    notificationToggle.addEventListener("change", function () {
+        localStorage.setItem("booknovaNotifications", this.checked);
+}); 
+    const notificationsModal = document.getElementById("notificationsModal");
+
+    document.querySelectorAll(".settings-option").forEach(option => {
+        option.addEventListener("click", function () {
+            if (this.dataset.setting === "notifications") {
+                settingsModal.classList.remove("show");
+                notificationsModal.classList.add("show");
+            }
+    });
+});
+
+    const closeNotificationsModal = document.getElementById("closeNotificationsModal");
+
+        closeNotificationsModal.addEventListener("click", function () {
+        notificationsModal.classList.remove("show");
+    });
+
+        notificationsModal.addEventListener("click", function (event) {
+        if (event.target === notificationsModal) {
+            notificationsModal.classList.remove("show");
+    }
+});
+    
+const closeSettingsModal = document.getElementById("closeSettingsModal");
+
+    closeSettingsModal.addEventListener("click", function () {
+        settingsModal.classList.remove("show");
+});
+
+settingsModal.addEventListener("click", function (event) {
+    if (event.target === settingsModal) {
+        settingsModal.classList.remove("show");
+    }
+});
+
+    // DARK MODE POPUP
+    const darkModeModal = document.getElementById("darkModeModal");
+    const darkModeToggle = document.getElementById("darkModeToggle");
+    const closeDarkModeModal = document.getElementById("closeDarkModeModal");
+
+    document.querySelectorAll(".settings-option").forEach(option => {
+        option.addEventListener("click", function () {
+
+            if (this.dataset.setting === "darkmode") {
+                settingsModal.classList.remove("show");
+                darkModeModal.classList.add("show");
+            }
+
+    });
+});
+
+closeDarkModeModal.addEventListener("click", function () {
+    darkModeModal.classList.remove("show");
+});
+
+darkModeModal.addEventListener("click", function (event) {
+    if (event.target === darkModeModal) {
+        darkModeModal.classList.remove("show");
+    }
+});
+
+// DARK MODE FUNCTIONALITY
+
+const savedDarkMode = localStorage.getItem("booknovaDarkMode");
+
+if (savedDarkMode === "true") {
+    document.body.classList.add("dark-mode");
+    darkModeToggle.checked = true;
+}
+
+darkModeToggle.addEventListener("change", function () {
+    if (this.checked) {
+        document.body.classList.add("dark-mode");
+        localStorage.setItem("booknovaDarkMode", "true");
+    } else {
+        document.body.classList.remove("dark-mode");
+        localStorage.setItem("booknovaDarkMode", "false");
+    }
+});
 
     // Display user details
     if (user.full_name || user.name) {
@@ -91,7 +188,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     break;
 
                 case "settings":
-                    alert("Settings will be available soon.");
+                    document.getElementById("settingsModal").classList.add("show");
                     break;
 
                 case "logout":
@@ -111,10 +208,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Header Settings Button
     if (settingsBtn) {
-        settingsBtn.addEventListener("click", function () {
-            alert("Settings will be available soon.");
-        });
-    }
+    settingsBtn.addEventListener("click", function () {
+        document.getElementById("settingsModal").classList.add("show");
+    });
+}
 
 });
     const personalModal = document.getElementById("personalModal");

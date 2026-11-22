@@ -152,6 +152,130 @@
     </div>
 </div>
 
+<!-- SETTINGS POPUP -->
+<div class="profile-modal" id="settingsModal">
+    <div class="profile-modal-content">
+
+        <div class="modal-header">
+            <h2>Settings</h2>
+            <button id="closeSettingsModal" type="button">&times;</button>
+        </div>
+
+        <div class="personal-details">
+
+            <button class="settings-option" type="button" data-setting="notifications">
+                <span>🔔</span>
+                <span>Notifications</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="settings-option" type="button" data-setting="darkmode">
+                <span>🌙</span>
+                <span>Dark Mode</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="settings-option" type="button" data-setting="language">
+                <span>🌐</span>
+                <span>Language</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="settings-option" type="button" data-setting="privacy">
+                <span>🔒</span>
+                <span>Privacy</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="settings-option" type="button" data-setting="about">
+                <span>ℹ️</span>
+                <span>About BookNova</span>
+                <span class="arrow">›</span>
+            </button>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- NOTIFICATIONS POPUP -->
+<div class="profile-modal" id="notificationsModal">
+    <div class="profile-modal-content">
+
+        <div class="modal-header">
+            <h2>Notifications</h2>
+            <button id="closeNotificationsModal" type="button">&times;</button>
+        </div>
+
+        <div class="personal-details">
+
+            <div class="detail-row">
+                <span>Notifications</span>
+                <p>Enable or disable BookNova notifications.</p>
+
+                <label class="notification-switch">
+                    <input type="checkbox" id="notificationToggle" checked>
+                    <span class="notification-slider"></span>
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- DARK MODE POPUP -->
+<div class="profile-modal" id="darkModeModal">
+    <div class="profile-modal-content">
+
+        <div class="modal-header">
+            <h2>Dark Mode</h2>
+            <button id="closeDarkModeModal" type="button">&times;</button>
+        </div>
+
+        <div class="personal-details">
+
+            <div class="detail-row">
+                <span>Dark Mode</span>
+                <p>Switch between light and dark appearance.</p>
+
+                <label class="notification-switch">
+                    <input type="checkbox" id="darkModeToggle">
+                    <span class="notification-slider"></span>
+                </label>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- LANGUAGE POPUP -->
+<div class="profile-modal" id="languageModal">
+    <div class="profile-modal-content">
+        <div class="modal-header">
+            <h2>Language</h2>
+            <button id="closeLanguageModal" type="button">&times;</button>
+        </div>
+
+        <div class="personal-details">
+            <div class="detail-row">
+                <span>Select Language</span>
+                <p>Choose your preferred language.</p>
+
+                <select id="languageSelect">
+                    <option value="en">English</option>
+                    <option value="hi">Hindi</option>
+                    <option value="gu">Gujarati</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
 

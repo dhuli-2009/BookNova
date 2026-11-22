@@ -455,3 +455,108 @@ body {
     flex-direction: column;
     gap: 16px;
 }
+
+/* NOTIFICATION SWITCH */
+
+#notificationsModal .detail-row {
+    position: relative;
+    padding: 15px 0 20px;
+    border-bottom: none;
+}
+
+#notificationsModal .detail-row p {
+    font-size: 13px;
+    color: #718096;
+    margin-top: 6px;
+    line-height: 1.5;
+}
+
+.notification-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    margin-top: 15px;
+}
+
+.notification-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.notification-slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background: #cbd5e1;
+    border-radius: 30px;
+    transition: 0.3s;
+}
+
+.notification-slider::before {
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+
+.notification-switch input:checked + .notification-slider {
+    background: #1767bd;
+}
+
+.notification-switch input:checked + .notification-slider::before {
+    transform: translateX(22px);
+}
+/* BOOKNOVA DARK MODE */
+
+body.dark-mode {
+    background: #121212 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .profile-container,
+body.dark-mode .profile-card,
+body.dark-mode .profile-section {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .profile-modal-content {
+    background: #222222 !important;
+    color: #ffffff !important;
+}
+
+body.dark-mode .modal-header h2 {
+    color: #66aaff !important;
+}
+
+body.dark-mode .detail-row span,
+body.dark-mode .detail-row p,
+body.dark-mode .detail-row strong {
+    color: #dddddd !important;
+}
+
+body.dark-mode .settings-option {
+    background: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #444444 !important;
+}
+
+body.dark-mode input,
+body.dark-mode select {
+    background: #2a2a2a !important;
+    color: #ffffff !important;
+    border-color: #555555 !important;
+}
+
+body.dark-mode .profile-header,
+body.dark-mode .bottom-nav {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+}
