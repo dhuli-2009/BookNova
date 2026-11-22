@@ -9,6 +9,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const userEmail = document.getElementById("userEmail");
     const userAvatar = document.getElementById("userAvatar");
 
+    // Show / Hide Password
+    const toggleButtons = document.querySelectorAll(".toggle-password");
+
+    toggleButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const targetId = this.dataset.target;
+            const passwordInput = document.getElementById(targetId);
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                this.textContent = "🙈";
+            } else {
+                passwordInput.type = "password";
+                this.textContent = "👁️";
+        }
+    });
+});
+
     // Display user details
     if (user.full_name || user.name) {
         userName.textContent = user.full_name || user.name;
@@ -65,9 +83,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     break;
 
                 case "password":
-                    alert("Change Password feature will be available soon.");
+                    document.getElementById("passwordModal").classList.add("show");
                     break;
-
+                    
                 case "statistics":
                     alert("Reading Statistics will be available soon.");
                     break;
@@ -109,5 +127,19 @@ document.addEventListener("DOMContentLoaded", function () {
     personalModal.addEventListener("click", function (event) {
         if (event.target === personalModal) {
             personalModal.classList.remove("show");
+        }
+});
+
+// Close Change Password Popup
+    const passwordModal = document.getElementById("passwordModal");
+    const closePasswordModal = document.getElementById("closePasswordModal");
+
+    closePasswordModal.addEventListener("click", function () {
+    passwordModal.classList.remove("show");
+});
+
+    passwordModal.addEventListener("click", function (event) {
+        if (event.target === passwordModal) {
+            passwordModal.classList.remove("show");
         }
 });

@@ -77,7 +77,42 @@
         </section>
 
     </main>
-    
+
+    <!-- Change Password Popup -->
+<div class="profile-modal" id="passwordModal">
+    <div class="profile-modal-content">
+
+        <div class="modal-header">
+            <h2>Change Password</h2>
+            <button id="closePasswordModal" type="button">&times;</button>
+        </div>
+
+        <div class="personal-details">
+
+            
+            <div class="password-input-box">
+                <input type="password" id="currentPassword" placeholder="Enter current password">
+                <button type="button" class="toggle-password" data-target="currentPassword">👁️</button>
+            </div>
+            
+            <div class="password-input-box">
+                <input type="password" id="newPassword" placeholder="Enter new password">
+                <button type="button" class="toggle-password" data-target="newPassword">👁️</button>
+            </div>
+
+           <div class="password-input-box">
+                <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                <button type="button" class="toggle-password" data-target="confirmPassword">👁️</button>
+            </div>
+
+        </div>
+
+        <button id="updatePasswordBtn" type="button">Update Password</button>
+
+    </div>
+</div>
+
+
     <!-- Personal Information Popup -->
 <div class="profile-modal" id="personalModal">
     <div class="profile-modal-content">
