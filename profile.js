@@ -46,16 +46,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
             switch (action) {
                 case "personal":
-                    alert(
-                        "Personal Information\n\n" +
-                        "Full Name: " + (user.full_name || user.name || "N/A") + "\n" +
-                        "Email: " + (user.email || "N/A") + "\n" +
-                        "User ID: " + (user.user_id || user.uid || "N/A") + "\n" +
-                        "Mobile: " + (user.phone || user.mobile || "N/A") + "\n" +
-                        "Role: " + (user.role || "User")
-                    );
+                    document.getElementById("detailName").textContent =
+                    user.full_name || user.name || "Not available";
+
+                    document.getElementById("detailUserId").textContent =
+                    user.user_id || user.uid || "Not available";
+
+                    document.getElementById("detailEmail").textContent =
+                    user.email || "Not available";
+
+                    document.getElementById("detailMobile").textContent =
+                    user.phone || user.mobile || "Not added";
+
+                    document.getElementById("detailRole").textContent =
+                    user.role || "User";
+
+                    document.getElementById("personalModal").classList.add("show");
                     break;
-                
+
                 case "password":
                     alert("Change Password feature will be available soon.");
                     break;
@@ -90,4 +98,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+});
+    const personalModal = document.getElementById("personalModal");
+    const closePersonalModal = document.getElementById("closePersonalModal");
+
+    closePersonalModal.addEventListener("click", function () {
+    personalModal.classList.remove("show");
+});
+
+    personalModal.addEventListener("click", function (event) {
+        if (event.target === personalModal) {
+            personalModal.classList.remove("show");
+        }
 });
