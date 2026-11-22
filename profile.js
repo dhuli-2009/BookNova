@@ -45,11 +45,17 @@ document.addEventListener("DOMContentLoaded", function () {
             const action = item.dataset.action;
 
             switch (action) {
-
                 case "personal":
-                    alert("Personal Information will be available soon.");
+                    alert(
+                        "Personal Information\n\n" +
+                        "Full Name: " + (user.full_name || user.name || "N/A") + "\n" +
+                        "Email: " + (user.email || "N/A") + "\n" +
+                        "User ID: " + (user.user_id || user.uid || "N/A") + "\n" +
+                        "Mobile: " + (user.phone || user.mobile || "N/A") + "\n" +
+                        "Role: " + (user.role || "User")
+                    );
                     break;
-
+                
                 case "password":
                     alert("Change Password feature will be available soon.");
                     break;
