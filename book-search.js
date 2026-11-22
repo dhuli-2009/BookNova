@@ -22,7 +22,7 @@ const categoryEmojis = {
 
 async function loadBooks() {
     try {
-        const response = await fetch("get-books.php");
+        const response = await fetch("/BookNova/get-books.php");
 
         if (!response.ok) {
             throw new Error("PHP file not found: " + response.status);
