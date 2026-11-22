@@ -313,3 +313,78 @@ body {
     width: 100%;
     max-width: 100%;
 }
+
+/* PERSONAL INFO POPUP */
+
+.profile-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.profile-modal.show {
+    display: flex;
+}
+
+.profile-modal-content {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 22px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 21px;
+    color: #1559a6;
+}
+
+#closePersonalModal {
+    border: none;
+    background: #eef4ff;
+    color: #1559a6;
+    font-size: 26px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.personal-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #edf1f5;
+}
+
+.detail-row span {
+    font-size: 13px;
+    color: #718096;
+}
+
+.detail-row strong {
+    font-size: 15px;
+    color: #263548;
+    overflow-wrap: anywhere;
+}
