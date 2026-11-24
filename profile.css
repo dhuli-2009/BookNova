@@ -916,3 +916,12 @@ body.dark-mode .bottom-nav {
         padding: 16px 0;
     }
 }
+
+.bottom-nav {
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+body {
+    border-bottom: none !important;
+}
