@@ -33,6 +33,7 @@ async function loadBooks() {
         console.log("PHP Response:", result);
 
         const books = JSON.parse(result);
+        console.log("first Book Detials:",books[0]);
 
         allBooks = books;
         displayBooks();
