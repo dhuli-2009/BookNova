@@ -1,4 +1,3 @@
-
 <?php
 header('Content-Type: application/json; charset=utf-8');
 
@@ -60,7 +59,9 @@ foreach ($folders as $folder) {
         $title = ucwords(trim($title));
 
         $books[] = [
+            'book_id' => md5($folder . '/' . $file),
             'title' => $title,
+            'author' => 'Unknown',
             'category' => $category,
             'filename' => $file,
             'pdf' => 'books/' . rawurlencode($folder) . '/' . rawurlencode($file)
