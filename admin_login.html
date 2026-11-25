@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BookNova - Admin Login</title>
+    <link rel="stylesheet" href="admin-login.css">
+</head>
+<body>
+
+    <div class="login-container">
+
+        <div class="book-logo">📖</div>
+
+        <h1>Admin Login</h1>
+        <p class="subtitle">BookNova Library Management System</p>
+
+        <form id="adminLoginForm">
+
+            <div class="input-group">
+                <input
+                    type="text"
+                    id="adminId"
+                    placeholder="Admin ID"
+                    required
+                >
+            </div>
+
+            <div class="input-group password-group">
+                <input
+                    type="password"
+                    id="adminPassword"
+                    placeholder="Password"
+                    required
+                >
+                <span id="togglePassword">👁</span>
+            </div>
+
+            <p id="errorMessage"></p>
+
+            <button type="submit" id="loginBtn">
+                Login
+            </button>
+
+        </form>
+
+        <p class="footer-text">
+            Smart Library Management System
+        </p>
+
+    </div>
+
+    <script src="admin-login.js"></script>
+</body>
+</html>
