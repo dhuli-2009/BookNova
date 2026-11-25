@@ -87,6 +87,9 @@ function displayBooks() {
     filteredBooks.forEach(book => {
         const card = document.createElement("article");
         card.className = "book-card";
+        card.addEventListener("click", () => {
+            console.log("Selected Book:", book);
+});
 
         const cover = document.createElement("div");
         cover.className = "book-cover";
