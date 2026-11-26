@@ -1,153 +1,297 @@
 
-const books = [
-    {
-        title: "Cognitive Psychology",
-        author: "College of the Canyons",
-        category: "Psychology",
-        file: "Cognitive-Psychology-College-of-the-Canyons.pdf",
-        icon: "🧠"
-    },
-    {
-        title: "Creative Vegetarian Cooking",
-        author: "Radha Soami Satsang Beas",
-        category: "Cooking",
-        file: "Creative-Vegetarian-Cooking-Radha-Soami-Satsang-Beas.pdf",
-        icon: "🥗"
-    },
-    {
-        title: "Dracula",
-        author: "Bram Stoker",
-        category: "Horror & Fiction",
-        file: "dracula-bram-stoker.pdf",
-        icon: "🧛"
-    },
-    {
-        title: "Frankenstein",
-        author: "Mary Shelley",
-        category: "Horror & Fiction",
-        file: "frankenstein-mary-shelley.pdf",
-        icon: "⚡"
-    },
-    {
-        title: "Healthy Cookbook",
-        author: "University of California, Riverside",
-        category: "Cooking",
-        file: "Healthy-Cookbook-University-of-California-Riverside.pdf",
-        icon: "🍎"
-    },
-    {
-        title: "Let's Go Birding!",
-        author: "Ted Floyd",
-        category: "Birds & Nature",
-        file: "lets-go-birding-ted-floyd.pdf",
-        icon: "🐦"
-    },
-    {
-        title: "Pride and Prejudice",
-        author: "Jane Austen",
-        category: "Classic Literature",
-        file: "pride-and-prejudice-jane-austen (1).pdf",
-        icon: "📜"
-    },
-    {
-        title: "State of the World's Birds",
-        author: "BirdLife International",
-        category: "Birds & Nature",
-        file: "state-of-the-worlds-birds-birdlife-international.pdf",
-        icon: "🦜"
-    }
-];
+document.addEventListener("DOMContentLoaded", function () {
 
-// HTML elements
-const bookList = document.getElementById("bookList");
-const emptyMessage = document.getElementById("emptyMessage");
+    // ===== MY LIBRARY TABS =====
 
-// Read saved data
-function getSavedBooks(key) {
-    try {
-        return JSON.parse(localStorage.getItem(key)) || [];
-    } catch {
-        return [];
-    }
-}
+    const tabButtons = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
 
-// Save data
-function saveBooks(key, list) {
-    localStorage.setItem(key, JSON.stringify(list));
-}
+    tabButtons.forEach(button => {
+        button.addEventListener("click", () => {
 
-// Display books
-function renderBooks(list, container, message) {
-    if (!container) return;
+            tabButtons.forEach(btn => btn.classList.remove("active"));
+            tabContents.forEach(section => section.classList.remove("active"));
 
-    container.innerHTML = "";
+            button.classList.add("active");
 
-    if (message) {
-        message.hidden = list.length !== 0;
-    }
+            const selectedTab = button.dataset.tab;
+            const selectedSection = document.getElementById(selectedTab);
 
-    list.forEach(book => {
-        const card = document.createElement("div");
-        card.className = "book-card";
-
-        const icon = document.createElement("div");
-        icon.className = "book-icon";
-        icon.textContent = book.icon || "📘";
-
-        const title = document.createElement("h3");
-        title.textContent = book.title;
-
-        const author = document.createElement("p");
-        author.textContent = "Author: " + book.author;
-
-        const category = document.createElement("p");
-        category.textContent = "Category: " + book.category;
-
-        const openButton = document.createElement("a");
-        openButton.className = "open-btn";
-        openButton.textContent = "Open PDF";
-        openButton.href = "books/" + encodeURIComponent(book.file);
-        openButton.target = "_blank";
-        openButton.rel = "noopener noreferrer";
-
-        card.append(icon, title, author, category, openButton);
-        container.appendChild(card);
-    });
-}
-
-// All 8 books from Book Search
-renderBooks(books, bookList, emptyMessage);
-
-// Display issued books if these elements exist in HTML
-const issuedList = document.getElementById("issuedList");
-const issuedEmpty = document.getElementById("issuedEmpty");
-
-renderBooks(
-    getSavedBooks("booknova_issued"),
-    issuedList,
-    issuedEmpty
-);
-
-// Return a book
-document.addEventListener("click", function (event) {
-    if (!event.target.classList.contains("return-book-btn")) {
-        return;
-    }
-
-    const title = event.target.dataset.title;
-    let issued = getSavedBooks("booknova_issued");
-
-    issued = issued.filter(book => book.title !== title);
-    saveBooks("booknova_issued", issued);
-
-    let history = getSavedBooks("booknova_history");
-    history.push({
-        title: title,
-        action: "Returned",
-        date: new Date().toLocaleDateString()
+            if (selectedSection) {
+                selectedSection.classList.add("active");
+            }
+        });
     });
 
-    saveBooks("booknova_history", history);
+    // ===== USER ID =====
 
-    location.reload();
+    async function getUserId() {
+        const user = JSON.parse(
+            sessionStorage.getItem("booknovaUser") || "{}"
+        );
+
+        if (user.user_id) {
+            return user.user_id;
+        }
+
+        // Google login user: find MySQL user by email
+        if (user.email) {
+            const response = await fetch(
+                "http://localhost:3001/api/user/lookup",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: user.email
+                    })
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("User not found in database");
+            }
+
+            const userData = await response.json();
+
+            user.user_id = userData.user_id;
+
+            sessionStorage.setItem(
+                "booknovaUser",
+                JSON.stringify(user)
+            );
+
+            return userData.user_id;
+        }
+
+        throw new Error("Please login first");
+    }
+
+    // ===== SAFE TEXT =====
+
+    function safeText(value) {
+        return String(value ?? "").replace(/[&<>"']/g, char => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[char]);
+    }
+
+    // ===== DATE FORMAT =====
+
+    function formatDate(value) {
+        if (!value) return "Not available";
+
+        const date = new Date(value);
+
+        if (isNaN(date.getTime())) return "Not available";
+
+        return date.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric"
+        });
+    }
+
+    // ===== BOOK CARD =====
+
+    function createBookCard(book, type) {
+
+        const title = safeText(book.title || "Untitled Book");
+        const author = safeText(book.author || book.category || "Unknown Author");
+
+        let cover = "📘";
+
+        if (book.cover_image) {
+            const imagePath = safeText(book.cover_image);
+
+            cover = `<img src="${imagePath}" alt="${title}"
+                onerror="this.style.display='none'">`;
+        }
+
+        let extraDetails = "";
+
+        if (type === "issued") {
+
+            const issueDate = formatDate(book.issue_date);
+            const dueDate = formatDate(book.due_date);
+
+            let statusText = "Issued";
+            let statusClass = "remaining";
+
+            if (book.due_date) {
+                const due = new Date(book.due_date);
+                const today = new Date();
+
+                due.setHours(0, 0, 0, 0);
+                today.setHours(0, 0, 0, 0);
+
+                const days = Math.ceil(
+                    (due - today) / (1000 * 60 * 60 * 24)
+                );
+
+                if (days < 0) {
+                    statusText = "Overdue";
+                    statusClass = "overdue";
+                } else {
+                    statusText = days + " Days Left";
+                }
+            }
+
+            extraDetails = `
+                <p class="date-info">Issued on: ${issueDate}</p>
+                <p class="date-info">Due on: ${dueDate}</p>
+                <span class="status-badge ${statusClass}">
+                    ${statusText}
+                </span>
+            `;
+
+        } else if (type === "reserved") {
+
+            extraDetails = `
+                <p class="date-info">
+                    Reserved on: ${formatDate(book.reservation_date)}
+                </p>
+                <span class="status-badge remaining">
+                    ${safeText(book.reservation_status || "Reserved")}
+                </span>
+            `;
+
+        } else if (type === "history") {
+
+            extraDetails = `
+                <p class="date-info">
+                    Read on: ${formatDate(book.read_date)}
+                </p>
+            `;
+
+        } else if (type === "favourites") {
+
+            extraDetails = `
+                <span class="status-badge remaining">
+                    ♥ Favourite
+                </span>
+            `;
+        }
+
+        return `
+            <div class="library-book-card">
+
+                <div class="book-cover cover-blue">
+                    <span>${cover}</span>
+                </div>
+
+                <div class="book-info">
+                    <h3>${title}</h3>
+                    <p class="book-author">${author}</p>
+                    ${extraDetails}
+                </div>
+
+            </div>
+        `;
+    }
+
+    // ===== DISPLAY BOOKS =====
+
+    function displayBooks(sectionId, books, type, emptyTitle, emptyMessage, emoji) {
+
+        const section = document.getElementById(sectionId);
+
+        if (!section) return;
+
+        if (books.length === 0) {
+
+            section.innerHTML = `
+                <div class="empty-state">
+                    <span>${emoji}</span>
+                    <h3>${emptyTitle}</h3>
+                    <p>${emptyMessage}</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        section.innerHTML = `
+            <div class="book-list">
+                ${books.map(book => createBookCard(book, type)).join("")}
+            </div>
+        `;
+    }
+
+    // ===== LOAD MY LIBRARY DATA =====
+
+    async function loadMyLibrary() {
+
+        try {
+            const userId = await getUserId();
+
+            const response = await fetch(
+                `http://localhost:3001/api/my-library/${encodeURIComponent(userId)}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load My Library data");
+            }
+
+            const data = await response.json();
+
+            displayBooks(
+                "issued",
+                data.issued || [],
+                "issued",
+                "No Issued Books",
+                "Your issued books will appear here.",
+                "📚"
+            );
+
+            displayBooks(
+                "reserved",
+                data.reserved || [],
+                "reserved",
+                "No Reserved Books",
+                "Your reserved books will appear here.",
+                "📚"
+            );
+
+            displayBooks(
+                "history",
+                data.history || [],
+                "history",
+                "No Reading History",
+                "Your reading history will appear here.",
+                "📖"
+            );
+
+            displayBooks(
+                "favourites",
+                data.favourites || [],
+                "favourites",
+                "No Favourite Books",
+                "Your favourite books will appear here.",
+                "♡"
+            );
+
+            console.log("My Library Data Loaded Successfully!");
+
+        } catch (error) {
+            console.error("My Library Error:", error);
+
+            document.querySelectorAll(".tab-content").forEach(section => {
+                section.innerHTML = `
+                    <div class="empty-state">
+                        <span>⚠️</span>
+                        <h3>Unable to Load Books</h3>
+                        <p>Please login again or try later.</p>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    loadMyLibrary();
+
 });
