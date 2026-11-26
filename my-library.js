@@ -1,153 +1,227 @@
 
-const books = [
-    {
-        title: "Cognitive Psychology",
-        author: "College of the Canyons",
-        category: "Psychology",
-        file: "Cognitive-Psychology-College-of-the-Canyons.pdf",
-        icon: "🧠"
-    },
-    {
-        title: "Creative Vegetarian Cooking",
-        author: "Radha Soami Satsang Beas",
-        category: "Cooking",
-        file: "Creative-Vegetarian-Cooking-Radha-Soami-Satsang-Beas.pdf",
-        icon: "🥗"
-    },
-    {
-        title: "Dracula",
-        author: "Bram Stoker",
-        category: "Horror & Fiction",
-        file: "dracula-bram-stoker.pdf",
-        icon: "🧛"
-    },
-    {
-        title: "Frankenstein",
-        author: "Mary Shelley",
-        category: "Horror & Fiction",
-        file: "frankenstein-mary-shelley.pdf",
-        icon: "⚡"
-    },
-    {
-        title: "Healthy Cookbook",
-        author: "University of California, Riverside",
-        category: "Cooking",
-        file: "Healthy-Cookbook-University-of-California-Riverside.pdf",
-        icon: "🍎"
-    },
-    {
-        title: "Let's Go Birding!",
-        author: "Ted Floyd",
-        category: "Birds & Nature",
-        file: "lets-go-birding-ted-floyd.pdf",
-        icon: "🐦"
-    },
-    {
-        title: "Pride and Prejudice",
-        author: "Jane Austen",
-        category: "Classic Literature",
-        file: "pride-and-prejudice-jane-austen (1).pdf",
-        icon: "📜"
-    },
-    {
-        title: "State of the World's Birds",
-        author: "BirdLife International",
-        category: "Birds & Nature",
-        file: "state-of-the-worlds-birds-birdlife-international.pdf",
-        icon: "🦜"
-    }
-];
+document.addEventListener("DOMContentLoaded", function () {
 
-// HTML elements
-const bookList = document.getElementById("bookList");
-const emptyMessage = document.getElementById("emptyMessage");
+    const API = "http://localhost:3001";
 
-// Read saved data
-function getSavedBooks(key) {
-    try {
-        return JSON.parse(localStorage.getItem(key)) || [];
-    } catch {
-        return [];
-    }
-}
+    const tabs = document.querySelectorAll(".tab-btn");
+    const sections = document.querySelectorAll(".tab-content");
 
-// Save data
-function saveBooks(key, list) {
-    localStorage.setItem(key, JSON.stringify(list));
-}
+    // TAB SWITCHING
+    tabs.forEach(tab => {
+        tab.addEventListener("click", function () {
 
-// Display books
-function renderBooks(list, container, message) {
-    if (!container) return;
+            tabs.forEach(t => t.classList.remove("active"));
+            sections.forEach(s => s.classList.remove("active"));
 
-    container.innerHTML = "";
+            this.classList.add("active");
 
-    if (message) {
-        message.hidden = list.length !== 0;
+            const section = document.getElementById(
+                this.dataset.tab + "Section"
+            );
+
+            if (section) {
+                section.classList.add("active");
+            }
+        });
+    });
+
+    // GET LOGGED-IN USER
+    async function getUserId() {
+
+        const user = JSON.parse(
+            sessionStorage.getItem("booknovaUser") || "{}"
+        );
+
+        if (user.user_id) {
+            return user.user_id;
+        }
+
+        if (!user.email) {
+            return null;
+        }
+
+        const response = await fetch(`${API}/api/user/lookup`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: user.email
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("User not found");
+        }
+
+        const userData = await response.json();
+
+        user.user_id = userData.user_id;
+
+        sessionStorage.setItem(
+            "booknovaUser",
+            JSON.stringify(user)
+        );
+
+        return userData.user_id;
     }
 
-    list.forEach(book => {
+    // SAFE TEXT
+    function safeText(value) {
+        const div = document.createElement("div");
+        div.textContent = value || "";
+        return div.innerHTML;
+    }
+
+    // FORMAT DATE
+    function formatDate(date) {
+        if (!date) return "Not available";
+
+        return new Date(date).toLocaleDateString("en-IN");
+    }
+
+    // BOOK CARD
+    function createBookCard(book, type) {
+
         const card = document.createElement("div");
         card.className = "book-card";
 
-        const icon = document.createElement("div");
-        icon.className = "book-icon";
-        icon.textContent = book.icon || "📘";
+        const title = safeText(book.title);
+        const author = safeText(book.author || "Unknown Author");
+        const category = safeText(book.category || "General");
 
-        const title = document.createElement("h3");
-        title.textContent = book.title;
+        const cover = book.cover_image
+            ? `<img src="${safeText(book.cover_image)}" alt="${title}">`
+            : `<div class="book-placeholder">📚</div>`;
 
-        const author = document.createElement("p");
-        author.textContent = "Author: " + book.author;
+        let details = "";
 
-        const category = document.createElement("p");
-        category.textContent = "Category: " + book.category;
+        if (type === "issued") {
+            details = `
+                <p>Issue Date: ${formatDate(book.issue_date)}</p>
+                <p>Due Date: ${formatDate(book.due_date)}</p>
+            `;
+        }
 
-        const openButton = document.createElement("a");
-        openButton.className = "open-btn";
-        openButton.textContent = "Open PDF";
-        openButton.href = "books/" + encodeURIComponent(book.file);
-        openButton.target = "_blank";
-        openButton.rel = "noopener noreferrer";
+        if (type === "reserved") {
+            details = `
+                <p>Reserved: ${formatDate(book.reservation_date)}</p>
+                <p>Status: ${safeText(book.reservation_status)}</p>
+            `;
+        }
 
-        card.append(icon, title, author, category, openButton);
-        container.appendChild(card);
-    });
-}
+        if (type === "history") {
+            details = `
+                <p>Read Date: ${formatDate(book.read_date)}</p>
+            `;
+        }
 
-// All 8 books from Book Search
-renderBooks(books, bookList, emptyMessage);
+        if (type === "favourites") {
+            details = `
+                <p>Category: ${category}</p>
+                <p>♥ Favourite</p>
+            `;
+        }
 
-// Display issued books if these elements exist in HTML
-const issuedList = document.getElementById("issuedList");
-const issuedEmpty = document.getElementById("issuedEmpty");
+        card.innerHTML = `
+            <div class="book-cover">${cover}</div>
+            <div class="book-info">
+                <h3>${title}</h3>
+                <p>${author}</p>
+                ${details}
+            </div>
+        `;
 
-renderBooks(
-    getSavedBooks("booknova_issued"),
-    issuedList,
-    issuedEmpty
-);
-
-// Return a book
-document.addEventListener("click", function (event) {
-    if (!event.target.classList.contains("return-book-btn")) {
-        return;
+        return card;
     }
 
-    const title = event.target.dataset.title;
-    let issued = getSavedBooks("booknova_issued");
+    // DISPLAY BOOKS
+    function displayBooks(sectionId, books, type, message) {
 
-    issued = issued.filter(book => book.title !== title);
-    saveBooks("booknova_issued", issued);
+        const section = document.getElementById(sectionId);
 
-    let history = getSavedBooks("booknova_history");
-    history.push({
-        title: title,
-        action: "Returned",
-        date: new Date().toLocaleDateString()
-    });
+        if (!section) return;
 
-    saveBooks("booknova_history", history);
+        section.innerHTML = "";
 
-    location.reload();
+        if (!books || books.length === 0) {
+            section.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📚</div>
+                    <h3>${message}</h3>
+                    <p>Your books will appear here.</p>
+                </div>
+            `;
+            return;
+        }
+
+        books.forEach(book => {
+            section.appendChild(createBookCard(book, type));
+        });
+    }
+
+    // LOAD MY LIBRARY
+    async function loadMyLibrary() {
+
+        try {
+            const userId = await getUserId();
+
+            if (!userId) {
+                throw new Error("Please login first");
+            }
+
+            const response = await fetch(
+                `${API}/api/my-library/${userId}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Unable to load library");
+            }
+
+            const data = await response.json();
+
+            displayBooks(
+                "issuedSection",
+                data.issued,
+                "issued",
+                "No Issued Books"
+            );
+
+            displayBooks(
+                "reservedSection",
+                data.reserved,
+                "reserved",
+                "No Reserved Books"
+            );
+
+            displayBooks(
+                "historySection",
+                data.history,
+                "history",
+                "No Reading History"
+            );
+
+            displayBooks(
+                "favouritesSection",
+                data.favourites,
+                "favourites",
+                "No Favourite Books"
+            );
+
+        } catch (error) {
+            console.error("My Library Error:", error);
+
+            document.querySelectorAll(".tab-content").forEach(section => {
+                section.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Unable to Load Books</h3>
+                        <p>${safeText(error.message)}</p>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    loadMyLibrary();
+
 });

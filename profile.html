@@ -1,0 +1,447 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - BookNova</title>
+    <link rel="stylesheet" href="profile.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="profile-header">
+        <a href="home.html" class="back-btn">‹</a>
+        <h2 data-lang="myProfile">My Profile</h2>
+        <button class="settings-btn" id="settingsBtn">⚙</button>
+    </header>
+
+    <main class="profile-container">
+
+        <!-- USER PROFILE -->
+        <section class="user-section">
+            <div class="avatar" id="userAvatar">👤</div>
+            <h2 id="userName">Loading...</h2>
+            <p class="user-email" id="userEmail">Loading...</p>
+        </section>
+
+        <!-- STATISTICS -->
+        <section class="stats-grid">
+            <div class="stat-card">
+                <h3 data-lang="booksIssued">Books Issued</h3>
+                <strong>12</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3 data-lang="booksRead">Books Read</h3>
+                <strong>25</strong>
+            </div>
+
+            <div class="stat-card">
+                <h3 data-lang="fine">Fine</h3>
+                <strong>₹120</strong>
+            </div>
+        </section>
+
+        <!-- PROFILE OPTIONS -->
+        <section class="profile-menu">
+
+            <button class="menu-item" data-action="personal">
+                <span class="menu-icon">👤</span>
+                <span data-lang="personal">Personal Info</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item" data-action="password">
+                <span class="menu-icon">🔒</span>
+                <span data-lang="password">Change Password</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item" data-action="statistics">
+                <span class="menu-icon">📊</span>
+                <span data-lang="statistics">Reading Statistics</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item" data-action="settings">
+                <span class="menu-icon">⚙️</span>
+                <span data-lang="settings">Settings</span>
+                <span class="arrow">›</span>
+            </button>
+
+            <button class="menu-item logout-item" data-action="logout">
+                <span class="menu-icon">🚪</span>
+                <span data-lang="logout">Logout</span>
+                <span class="arrow">›</span>
+            </button>
+
+        </section>
+    </main>
+
+    <!-- CHANGE PASSWORD POPUP -->
+    <div class="profile-modal" id="passwordModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="password">Change Password</h2>
+                <button id="closePasswordModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+
+                <div class="password-input-box">
+                    <input type="password" id="currentPassword"
+                        data-lang-placeholder="currentPasswordPlaceholder"
+                        placeholder="Enter current password">
+                    <button type="button" class="toggle-password"
+                        data-target="currentPassword">👁️</button>
+                </div>
+
+                <div class="password-input-box">
+                    <input type="password" id="newPassword"
+                        data-lang-placeholder="newPasswordPlaceholder"
+                        placeholder="Enter new password">
+                    <button type="button" class="toggle-password"
+                        data-target="newPassword">👁️</button>
+                </div>
+
+                <div class="password-input-box">
+                    <input type="password" id="confirmPassword"
+                        data-lang-placeholder="confirmPasswordPlaceholder"
+                        placeholder="Confirm new password">
+                    <button type="button" class="toggle-password"
+                        data-target="confirmPassword">👁️</button>
+                </div>
+
+            </div>
+
+            <button id="updatePasswordBtn" type="button" data-lang="updatePassword">
+                Update Password
+            </button>
+
+        </div>
+    </div>
+
+    <!-- PERSONAL INFORMATION POPUP -->
+    <div class="profile-modal" id="personalModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="personalTitle">Personal Information</h2>
+                <button id="closePersonalModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+
+                <div class="detail-row">
+                    <span data-lang="fullName">Full Name</span>
+                    <strong id="detailName">-</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span data-lang="userId">User ID</span>
+                    <strong id="detailUserId">-</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span data-lang="emailAddress">Email Address</span>
+                    <strong id="detailEmail">-</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span data-lang="mobileNumber">Mobile Number</span>
+                    <strong id="detailMobile">-</strong>
+                </div>
+
+                <div class="detail-row">
+                    <span data-lang="accountRole">Account Role</span>
+                    <strong id="detailRole">-</strong>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- SETTINGS POPUP -->
+    <div class="profile-modal" id="settingsModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="settings">Settings</h2>
+                <button id="closeSettingsModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+
+                <button class="settings-option" type="button" data-setting="notifications">
+                    <span>🔔</span>
+                    <span data-lang="notifications">Notifications</span>
+                    <span class="arrow">›</span>
+                </button>
+
+                <button class="settings-option" type="button" data-setting="darkmode">
+                    <span>🌙</span>
+                    <span data-lang="darkMode">Dark Mode</span>
+                    <span class="arrow">›</span>
+                </button>
+
+                <button class="settings-option" type="button" data-setting="language">
+                    <span>🌐</span>
+                    <span data-lang="language">Language</span>
+                    <span class="arrow">›</span>
+                </button>
+
+                <button class="settings-option" type="button" data-setting="privacy">
+                    <span>🔒</span>
+                    <span data-lang="privacy">Privacy</span>
+                    <span class="arrow">›</span>
+                </button>
+
+                <button class="settings-option" type="button" data-setting="about">
+                    <span>ℹ️</span>
+                    <span data-lang="about">About BookNova</span>
+                    <span class="arrow">›</span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATIONS POPUP -->
+    <div class="profile-modal" id="notificationsModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="notificationTitle">Notifications</h2>
+                <button id="closeNotificationsModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+                <div class="detail-row">
+                    <span data-lang="notifications">Notifications</span>
+                    <p data-lang="notificationMessage">
+                        Enable or disable BookNova notifications.
+                    </p>
+
+                    <label class="notification-switch">
+                        <input type="checkbox" id="notificationToggle" checked>
+                        <span class="notification-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- DARK MODE POPUP -->
+    <div class="profile-modal" id="darkModeModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="darkModeTitle">Dark Mode</h2>
+                <button id="closeDarkModeModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+                <div class="detail-row">
+                    <span data-lang="darkMode">Dark Mode</span>
+                    <p data-lang="darkModeMessage">
+                        Switch between light and dark appearance.
+                    </p>
+
+                    <label class="notification-switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="notification-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- LANGUAGE POPUP -->
+    <div class="profile-modal" id="languageModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="languageTitle">Language</h2>
+                <button id="closeLanguageModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+                <div class="detail-row">
+                    <span data-lang="selectLanguage">Select Language</span>
+                    <p data-lang="languageMessage">Choose your preferred language.</p>
+
+                    <select id="languageSelect">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                        <option value="gu">ગુજરાતી</option>
+                    </select>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- PRIVACY POPUP -->
+    <div class="profile-modal" id="privacyModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="privacyTitle">Privacy</h2>
+                <button id="closePrivacyModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+
+                <div class="detail-row">
+                    <span data-lang="privacySecurity">Privacy & Security</span>
+                    <p data-lang="privacySecurityMessage">
+                        Your account information is private and secure.
+                    </p>
+                </div>
+
+                <div class="detail-row">
+                    <span data-lang="personalInformation">Personal Information</span>
+                    <p data-lang="personalInformationMessage">
+                        Your personal details are used only for your BookNova account.
+                    </p>
+                </div>
+
+                <div class="detail-row">
+                    <span data-lang="accountSecurity">Account Security</span>
+                    <p data-lang="accountSecurityMessage">
+                        Keep your password safe and do not share it with anyone.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    
+    <!-- ABOUT BOOKNOVA POPUP -->
+    <div class="profile-modal" id="aboutModal">
+        <div class="profile-modal-content">
+
+            <div class="modal-header">
+                <h2 data-lang="aboutTitle">About BookNova</h2>
+                <button id="closeAboutModal" type="button">&times;</button>
+            </div>
+
+            <div class="personal-details">
+                <div class="detail-row">
+                <p data-lang="aboutMessage">
+                    BookNova Smart Library Management System
+                </p>
+
+                <p data-lang="aboutDescription">
+                    BookNova helps readers explore books and manage their library.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- READING STATISTICS POPUP -->
+<div class="profile-modal" id="readingStatisticsModal">
+    <div class="profile-modal-content">
+
+        <div class="modal-header">
+            <h2>Reading Statistics</h2>
+            <button id="closeReadingStatisticsModal" type="button">&times;</button>
+        </div>
+
+        <div class="reading-stats-container">
+
+            <!-- BOOKS READ -->
+            <div class="reading-stat-card">
+                <div class="reading-stat-icon">📚</div>
+                <p>Total Books Read</p>
+                <h3 id="totalBooksRead">0</h3>
+            </div>
+
+            <!-- CURRENTLY READING -->
+            <div class="reading-stat-card">
+                <div class="reading-stat-icon">📖</div>
+                <p>Currently Reading</p>
+                <h3 id="currentlyReading">0</h3>
+            </div>
+
+            <!-- BOOKS ISSUED -->
+            <div class="reading-stat-card">
+                <div class="reading-stat-icon">📕</div>
+                <p>Books Issued</p>
+                <h3 id="booksIssuedStats">0</h3>
+            </div>
+
+            <!-- READING PROGRESS -->
+            <div class="reading-stat-card">
+                <div class="reading-stat-icon">📊</div>
+                <p>Reading Progress</p>
+                <h3 id="readingProgress">0%</h3>
+
+                <div class="reading-progress-bar">
+                    <div class="reading-progress-fill" id="readingProgressFill"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- READING ACTIVITY -->
+        <div class="reading-activity-section">
+            <h3>Reading Activity</h3>
+
+            <div class="reading-activity-row">
+                <span>📘</span>
+                <div>
+                    <strong>Reading Goal</strong>
+                    <p>Keep reading and reach your goal!</p>
+                </div>
+            </div>
+
+            <div class="reading-activity-row">
+                <span>🏆</span>
+                <div>
+                    <strong>Achievement</strong>
+                    <p>Your reading journey starts here.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+    <!-- BOTTOM NAVIGATION -->
+    <nav class="bottom-nav">
+
+        <a href="home.html" class="nav-item">
+            <span>⌂</span>
+            <small data-lang="home">Home</small>
+        </a>
+
+        <a href="book-search.html" class="nav-item">
+            <span>⌕</span>
+            <small data-lang="search">Search</small>
+        </a>
+
+        <a href="my-library.php" class="nav-item">
+            <span>📖</span>
+            <small data-lang="myLibrary">My Library</small>
+        </a>
+
+        <a href="profile.html" class="nav-item active">
+            <span>♙</span>
+            <small data-lang="profile">Profile</small>
+        </a>
+
+    </nav>
+
+    <script src="profile.js"></script>
+
+</body>
+</html>

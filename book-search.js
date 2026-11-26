@@ -22,25 +22,20 @@ const categoryEmojis = {
 
 async function loadBooks() {
     try {
-        const response = await fetch("get-books.php");
+        const response = await fetch("http://localhost/BookNova/get-books.php");
 
         if (!response.ok) {
             throw new Error("PHP file not found: " + response.status);
         }
 
-        const response1 = await fetch("get-books.php");
-
         const result = await response.text();
 
         console.log("PHP Response:", result);
 
-        if (!response1.ok) {
-            throw new Error("PHP Error: " + response.status);
-        }
+        const books = JSON.parse(result);
+        console.log("first Book Detials:",books[0]);
 
-const books = JSON.parse(result);
         allBooks = books;
-
         displayBooks();
 
     } catch (error) {
@@ -49,9 +44,6 @@ const books = JSON.parse(result);
         bookGrid.innerHTML = "<p>" + error.message + "</p>";
     }
 }
-
-loadBooks();
-
 
 // Category filter
 categoryButtons.addEventListener("click", function(event) {
@@ -95,6 +87,9 @@ function displayBooks() {
     filteredBooks.forEach(book => {
         const card = document.createElement("article");
         card.className = "book-card";
+        card.addEventListener("click", () => {
+            console.log("Selected Book:", book);
+});
 
         const cover = document.createElement("div");
         cover.className = "book-cover";

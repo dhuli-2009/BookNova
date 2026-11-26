@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BookNova - Book Details</title>
+
+    <link rel="stylesheet" href="book-details.css">
+</head>
+<body>
+
+    <header class="header">
+        <h2>📚 BookNova</h2>
+        <p>Smart Library Management System</p>
+    </header>
+
+    <main class="container">
+
+        <button class="back-btn" onclick="history.back()">← Back</button>
+
+        <div class="book-card">
+
+            <div class="book-icon" id="bookIcon">📖</div>
+
+            <h1 id="bookTitle">Book Title</h1>
+
+            <p class="author" id="bookAuthor">Author Name</p>
+
+            <span class="category" id="bookCategory">Category</span>
+
+            <div class="rating">
+                ⭐ 4.5 / 5
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>About This Book</h3>
+
+            <p class="description" id="bookDescription">
+                Explore this book and enjoy reading.
+                Discover new knowledge, ideas and stories
+                through the BookNova library.
+            </p>
+
+            <div class="availability">
+                <span class="dot"></span>
+                Available
+            </div>
+
+            <button class="issue-btn" onclick="issueBook()">
+                Issue Book
+            </button>
+
+            <button class="favourite-btn" onclick="addFavourite()">
+                ♡ Add to Favourite
+            </button>
+
+        </div>
+
+    </main>
+
+    <nav class="bottom-nav">
+        <a href="home.html">⌂<span>Home</span></a>
+        <a href="book-search.html">⌕<span>Search</span></a>
+        <a href="my-library.html">▣<span>My Library</span></a>
+        <a href="profile.html">♙<span>Profile</span></a>
+    </nav>
+
+    <script src="book-details.js"></script>
+
+</body>
+</html>
