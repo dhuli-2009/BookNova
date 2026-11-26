@@ -34,6 +34,25 @@ db.connect((err) => {
     console.log("MySQL Database Connected!");
 });
 
+app.get("/api/login-activity", (req, res) => {
+    const sql = `
+        SELECT users.full_name, login_activity.logged_in_at
+        FROM login_activity
+        JOIN users ON login_activity.user_id = users.user_id
+        ORDER BY login_activity.logged_in_at DESC
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            return res.status(500).json({
+                message: "Unable to fetch login activity"
+            });
+        }
+
+        res.json(results);
+    });
+});
+
 app.get("/api/books", (req, res) => {
     db.query("SELECT * FROM books", (err, results) => {
         if (err) {
@@ -119,6 +138,15 @@ app.post("/api/login", async(req, res) => {
                 message: "Invalid email or password"
             });
         }
+        db.query(
+        "INSERT INTO login_activity (user_id) VALUES (?)",
+        [user.user_id],
+        (err) => {
+        if (err) {
+            console.log("Login activity error:", err.message);
+        }
+    }
+);
 
         res.json({
             message: "Login successful",

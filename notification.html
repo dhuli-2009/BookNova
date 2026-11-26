@@ -205,6 +205,9 @@ body {
 
 <script>
 const notificationList = document.getElementById("notificationList");
+const API_URL = "https://booknova.onrender.com/api/login-activity";
+
+let readNotifications = new Set();
 
 function showEmptyState() {
     notificationList.innerHTML = `
@@ -216,13 +219,75 @@ function showEmptyState() {
     `;
 }
 
-showEmptyState();
+async function loadNotifications() {
+    try {
+        const response = await fetch(API_URL);
+        const activities = await response.json();
+
+        if (!response.ok || !Array.isArray(activities) || activities.length === 0) {
+            showEmptyState();
+            return;
+        }
+
+        notificationList.innerHTML = "";
+
+        activities.forEach(activity => {
+            const time = new Date(activity.logged_in_at);
+            const notificationId = activity.full_name + time.getTime();
+
+            const card = document.createElement("div");
+            card.className = "notification";
+
+            if (!readNotifications.has(notificationId)) {
+                card.classList.add("unread");
+            }
+
+            card.innerHTML = `
+                <div class="icon">👤</div>
+                <div class="content">
+                    <h4>${activity.full_name} logged in to BookNova</h4>
+                    <p>${time.toLocaleString("en-IN")}</p>
+                </div>
+            `;
+
+            card.addEventListener("click", function() {
+                card.classList.remove("unread");
+                readNotifications.add(notificationId);
+            });
+
+            notificationList.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Notification loading error:", error);
+        notificationList.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">⚠️</div>
+                <h3>Unable to load notifications</h3>
+                <p>Please check your internet connection and try again.</p>
+            </div>
+        `;
+    }
+}
 
 document.getElementById("markAll").addEventListener("click", function() {
-    document.querySelectorAll(".notification.unread").forEach(function(item) {
-        item.classList.remove("unread");
+    document.querySelectorAll(".notification.unread").forEach(card => {
+        card.classList.remove("unread");
     });
+
+    readNotifications = new Set(
+        Array.from(document.querySelectorAll(".notification .content h4"))
+            .map((heading, index) => {
+                const activity = heading.textContent;
+                const timeText = heading.nextElementSibling.textContent;
+                return activity + new Date(timeText).getTime();
+            })
+    );
 });
+
+loadNotifications();
+
+setInterval(loadNotifications, 5000);
 </script>
 
 </body>
